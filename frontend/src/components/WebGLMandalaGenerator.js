@@ -1006,6 +1006,171 @@ export default function WebGLMandalaGenerator() {
                 </div>
               )}
 
+              {activePanel === 'kaleidoscope' && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-medium text-slate-300">Image Upload</label>
+                    <Button
+                      size="sm"
+                      variant={useTex ? "default" : "outline"}
+                      onClick={() => setUseTex(!useTex)}
+                      className="text-xs"
+                    >
+                      {useTex ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+                    </Button>
+                  </div>
+
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={onUploadImage}
+                    className="text-xs bg-slate-700 border-slate-600"
+                  />
+
+                  {useTex && (
+                    <div className="space-y-4 p-3 bg-slate-800/30 rounded-lg">
+                      {/* Image Mixing */}
+                      <div>
+                        <label className="text-xs font-medium text-slate-300">Image Mix</label>
+                        <div className="text-xs text-slate-500 mb-2">{Math.round(texMix * 100)}%</div>
+                        <Slider 
+                          min={0} max={1} step={0.01} 
+                          value={[texMix]} 
+                          onValueChange={([v]) => setTexMix(v)}
+                        />
+                      </div>
+
+                      {/* Transform Controls */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="text-xs font-medium text-slate-300">Scale</label>
+                          <div className="text-xs text-slate-500 mb-2">{texScale.toFixed(2)}</div>
+                          <Slider 
+                            min={0.1} max={5} step={0.01} 
+                            value={[texScale]} 
+                            onValueChange={([v]) => setTexScale(v)}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium text-slate-300">Rotation</label>
+                          <div className="text-xs text-slate-500 mb-2">{Math.round(texRot * 180/Math.PI)}°</div>
+                          <Slider 
+                            min={0} max={Math.PI * 2} step={0.01} 
+                            value={[texRot]} 
+                            onValueChange={([v]) => setTexRot(v)}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Position Controls */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="text-xs font-medium text-slate-300">Offset X</label>
+                          <div className="text-xs text-slate-500 mb-2">{texCX.toFixed(2)}</div>
+                          <Slider 
+                            min={-1} max={1} step={0.01} 
+                            value={[texCX]} 
+                            onValueChange={([v]) => setTexCX(v)}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium text-slate-300">Offset Y</label>
+                          <div className="text-xs text-slate-500 mb-2">{texCY.toFixed(2)}</div>
+                          <Slider 
+                            min={-1} max={1} step={0.01} 
+                            value={[texCY]} 
+                            onValueChange={([v]) => setTexCY(v)}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Mirror Toggle */}
+                      <div className="flex items-center justify-between">
+                        <label className="text-xs font-medium text-slate-300">Mirror Edges</label>
+                        <Button
+                          size="sm"
+                          variant={texMirror ? "default" : "outline"}
+                          onClick={() => setTexMirror(!texMirror)}
+                          className="text-xs"
+                        >
+                          {texMirror ? "On" : "Off"}
+                        </Button>
+                      </div>
+
+                      {/* HSL Color Adjustments */}
+                      <div className="space-y-3 p-3 bg-slate-700/30 rounded-lg border border-slate-600/30">
+                        <div className="flex items-center justify-between">
+                          <label className="text-xs font-medium text-slate-300">Color Adjustments (HSL)</label>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setImgHueDeg(0);
+                              setImgSat(1.0);
+                              setImgLight(0.0);
+                            }}
+                            className="text-xs"
+                          >
+                            Reset
+                          </Button>
+                        </div>
+                        
+                        <div>
+                          <label className="text-xs text-slate-400">Hue Shift</label>
+                          <div className="text-xs text-slate-500 mb-1">{imgHueDeg}°</div>
+                          <Slider 
+                            min={-180} max={180} step={1} 
+                            value={[imgHueDeg]} 
+                            onValueChange={([v]) => setImgHueDeg(v)}
+                          />
+                        </div>
+                        
+                        <div>
+                          <label className="text-xs text-slate-400">Saturation</label>
+                          <div className="text-xs text-slate-500 mb-1">{imgSat.toFixed(2)}×</div>
+                          <Slider 
+                            min={0} max={2} step={0.01} 
+                            value={[imgSat]} 
+                            onValueChange={([v]) => setImgSat(v)}
+                          />
+                        </div>
+                        
+                        <div>
+                          <label className="text-xs text-slate-400">Lightness</label>
+                          <div className="text-xs text-slate-500 mb-1">{imgLight > 0 ? '+' : ''}{imgLight.toFixed(2)}</div>
+                          <Slider 
+                            min={-1} max={1} step={0.01} 
+                            value={[imgLight]} 
+                            onValueChange={([v]) => setImgLight(v)}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Reset All Button */}
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setTexMix(1.0);
+                          setTexScale(1.0);
+                          setTexRot(0);
+                          setTexCX(0);
+                          setTexCY(0);
+                          setTexMirror(false);
+                          setImgHueDeg(0);
+                          setImgSat(1.0);
+                          setImgLight(0.0);
+                        }}
+                        className="w-full bg-slate-700 hover:bg-slate-600 text-slate-200"
+                      >
+                        <RotateCcw className="w-3 h-3 mr-2" />
+                        Reset All Kaleidoscope Settings
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {activePanel === 'effects' && (
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-3">
