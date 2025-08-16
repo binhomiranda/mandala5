@@ -927,6 +927,49 @@ export default function WebGLMandalaGenerator() {
                     </div>
                   </div>
 
+                  {/* Image Upload for Kaleidoscope */}
+                  <div className="space-y-3 p-3 bg-slate-800/30 rounded-lg border border-slate-700/30">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-medium text-slate-300">Kaleidoscope Image</label>
+                      <Button
+                        size="sm"
+                        variant={useTex ? "default" : "outline"}
+                        onClick={() => setUseTex(!useTex)}
+                        className="text-xs"
+                      >
+                        {useTex ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+                      </Button>
+                    </div>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={onUploadImage}
+                      className="text-xs bg-slate-700 border-slate-600"
+                    />
+                    {useTex && (
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="text-xs text-slate-400">Mix</label>
+                          <Slider 
+                            min={0} max={1} step={0.01} 
+                            value={[texMix]} 
+                            onValueChange={([v]) => setTexMix(v)}
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-slate-400">Scale</label>
+                          <Slider 
+                            min={0.2} max={3} step={0.01} 
+                            value={[texScale]} 
+                            onValueChange={([v]) => setTexScale(v)}
+                            className="mt-1"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
                   <div className="space-y-3 p-3 bg-slate-800/30 rounded-lg">
                     <div className="flex items-center justify-between">
                       <label className="text-xs font-medium text-slate-300">Stars</label>
@@ -956,6 +999,50 @@ export default function WebGLMandalaGenerator() {
                             min={0.1} max={1} step={0.1} 
                             value={[starIntensity]} 
                             onValueChange={([v]) => setStarIntensity(v)}
+                            className="mt-1"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Wave Effects */}
+                  <div className="space-y-3 p-3 bg-slate-800/30 rounded-lg">
+                    <label className="text-xs font-medium text-slate-300">Wave Effects</label>
+                    <div className="flex gap-2">
+                      {[
+                        { value: 0, label: 'None' },
+                        { value: 1, label: 'Ripple' },
+                        { value: 2, label: 'Wave' }
+                      ].map((effect) => (
+                        <Button
+                          key={effect.value}
+                          size="sm"
+                          variant={effectType === effect.value ? "default" : "outline"}
+                          onClick={() => setEffectType(effect.value)}
+                          className="text-xs flex-1"
+                        >
+                          {effect.label}
+                        </Button>
+                      ))}
+                    </div>
+                    {effectType > 0 && (
+                      <div className="grid grid-cols-2 gap-3 mt-3">
+                        <div>
+                          <label className="text-xs text-slate-400">Amplitude</label>
+                          <Slider 
+                            min={0} max={1} step={0.01} 
+                            value={[effectAmp]} 
+                            onValueChange={([v]) => setEffectAmp(v)}
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-slate-400">Frequency</label>
+                          <Slider 
+                            min={0} max={2} step={0.01} 
+                            value={[effectFreq]} 
+                            onValueChange={([v]) => setEffectFreq(v)}
                             className="mt-1"
                           />
                         </div>
