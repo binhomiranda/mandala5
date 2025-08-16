@@ -1040,6 +1040,69 @@ export default function WebGLMandalaGenerator() {
             </CardContent>
           </Card>
 
+          {/* Preset Management */}
+          <Card className="bg-slate-900/50 border-slate-700/50 backdrop-blur-sm">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm text-slate-300">Presets</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex gap-2">
+                <Button 
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    const preset = {
+                      sym, glow, speed, scale, centerX, centerY,
+                      col1, col2, col3, gradMix, seed,
+                      starsOn, starDensity, starIntensity,
+                      effectType, effectAmp, effectFreq
+                    };
+                    const presetName = prompt("Enter preset name:");
+                    if (presetName) {
+                      localStorage.setItem(`mandala_preset_${presetName}`, JSON.stringify(preset));
+                      alert(`Preset "${presetName}" saved!`);
+                    }
+                  }}
+                  className="flex-1"
+                >
+                  Save Preset
+                </Button>
+                <Button 
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    const presets = Object.keys(localStorage).filter(k => k.startsWith('mandala_preset_'));
+                    if (presets.length === 0) {
+                      alert("No presets found!");
+                      return;
+                    }
+                    const presetList = presets.map(k => k.replace('mandala_preset_', '')).join('\n');
+                    const presetName = prompt(`Available presets:\n${presetList}\n\nEnter preset name to load:`);
+                    if (presetName) {
+                      const preset = localStorage.getItem(`mandala_preset_${presetName}`);
+                      if (preset) {
+                        const data = JSON.parse(preset);
+                        setSym(data.sym); setGlow(data.glow); setSpeed(data.speed);
+                        setScale(data.scale); setCenterX(data.centerX); setCenterY(data.centerY);
+                        setCol1(data.col1); setCol2(data.col2); setCol3(data.col3);
+                        setGradMix(data.gradMix); setSeed(data.seed);
+                        setStarsOn(data.starsOn); setStarDensity(data.starDensity);
+                        setStarIntensity(data.starIntensity); setEffectType(data.effectType);
+                        setEffectAmp(data.effectAmp); setEffectFreq(data.effectFreq);
+                        alert(`Preset "${presetName}" loaded!`);
+                      } else {
+                        alert("Preset not found!");
+                      }
+                    }
+                  }}
+                  className="flex-1"
+                >
+                  Load Preset
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Export Settings */}
           <Card className="bg-slate-900/50 border-slate-700/50 backdrop-blur-sm">
             <CardHeader className="pb-2">
