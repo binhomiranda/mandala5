@@ -1194,48 +1194,7 @@ export default function WebGLMandalaGenerator() {
                     </div>
                   </div>
 
-                  {/* Image Upload for Kaleidoscope */}
-                  <div className="space-y-3 p-3 bg-slate-800/30 rounded-lg border border-slate-700/30">
-                    <div className="flex items-center justify-between">
-                      <label className="text-xs font-medium text-slate-300">Kaleidoscope Image</label>
-                      <Button
-                        size="sm"
-                        variant={useTex ? "default" : "outline"}
-                        onClick={() => setUseTex(!useTex)}
-                        className="text-xs"
-                      >
-                        {useTex ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
-                      </Button>
-                    </div>
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      onChange={onUploadImage}
-                      className="text-xs bg-slate-700 border-slate-600"
-                    />
-                    {useTex && (
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <label className="text-xs text-slate-400">Mix</label>
-                          <Slider 
-                            min={0} max={1} step={0.01} 
-                            value={[texMix]} 
-                            onValueChange={([v]) => setTexMix(v)}
-                            className="mt-1"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-xs text-slate-400">Scale</label>
-                          <Slider 
-                            min={0.2} max={3} step={0.01} 
-                            value={[texScale]} 
-                            onValueChange={([v]) => setTexScale(v)}
-                            className="mt-1"
-                          />
-                        </div>
-                      </div>
-                    )}
-                  </div>
+
 
                   <div className="space-y-3 p-3 bg-slate-800/30 rounded-lg">
                     <div className="flex items-center justify-between">
