@@ -924,6 +924,7 @@ export default function WebGLMandalaGenerator() {
                 {[
                   { id: 'geometry', label: 'Geometry', icon: Settings },
                   { id: 'colors', label: 'Colors', icon: Palette },
+                  { id: 'kaleidoscope', label: 'Kaleidoscope', icon: Upload },
                   { id: 'effects', label: 'Effects', icon: Zap },
                   { id: 'text', label: 'Text', icon: Star }
                 ].map(({ id, label, icon: Icon }) => (
