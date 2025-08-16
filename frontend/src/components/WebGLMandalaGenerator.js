@@ -430,6 +430,107 @@ export default function WebGLMandalaGenerator() {
     if (u) u.u_col3.value.set(col3Vec.r, col3Vec.g, col3Vec.b);
   }, [col3Vec]);
 
+  // Sync additional uniforms
+  useEffect(() => {
+    const u = uniformsRef.current;
+    if (u) u.u_gradMix.value = gradMix;
+  }, [gradMix]);
+
+  useEffect(() => {
+    const u = uniformsRef.current;
+    if (u) u.u_seed.value = seed;
+  }, [seed]);
+
+  useEffect(() => {
+    const u = uniformsRef.current;
+    if (u) u.u_bgDim.value = bgDim;
+  }, [bgDim]);
+
+  useEffect(() => {
+    const u = uniformsRef.current;
+    if (u) u.u_stars.value = starsOn ? 1.0 : 0.0;
+  }, [starsOn]);
+
+  useEffect(() => {
+    const u = uniformsRef.current;
+    if (u) u.u_starDensity.value = starDensity;
+  }, [starDensity]);
+
+  useEffect(() => {
+    const u = uniformsRef.current;
+    if (u) u.u_starIntensity.value = starIntensity;
+  }, [starIntensity]);
+
+  useEffect(() => {
+    const u = uniformsRef.current;
+    if (u) u.u_starSeed.value = starSeed;
+  }, [starSeed]);
+
+  useEffect(() => {
+    const u = uniformsRef.current;
+    if (u) u.u_effectType.value = effectType;
+  }, [effectType]);
+
+  useEffect(() => {
+    const u = uniformsRef.current;
+    if (u) u.u_effectAmp.value = effectAmp;
+  }, [effectAmp]);
+
+  useEffect(() => {
+    const u = uniformsRef.current;
+    if (u) u.u_effectFreq.value = effectFreq;
+  }, [effectFreq]);
+
+  useEffect(() => {
+    const u = uniformsRef.current;
+    if (u) u.u_useTex.value = useTex ? 1.0 : 0.0;
+  }, [useTex]);
+
+  useEffect(() => {
+    const u = uniformsRef.current;
+    if (u) u.u_texMix.value = texMix;
+  }, [texMix]);
+
+  useEffect(() => {
+    const u = uniformsRef.current;
+    if (u) u.u_texScale.value = texScale;
+  }, [texScale]);
+
+  useEffect(() => {
+    const u = uniformsRef.current;
+    if (u) u.u_texRot.value = texRot;
+  }, [texRot]);
+
+  useEffect(() => {
+    const u = uniformsRef.current;
+    if (u) u.u_texCenter.value.set(texCX, texCY);
+  }, [texCX, texCY]);
+
+  useEffect(() => {
+    const u = uniformsRef.current;
+    if (u) u.u_texMirror.value = texMirror ? 1.0 : 0.0;
+  }, [texMirror]);
+
+  useEffect(() => {
+    const u = uniformsRef.current;
+    if (u) u.u_imgHue.value = imgHueDeg / 360.0;
+  }, [imgHueDeg]);
+
+  useEffect(() => {
+    const u = uniformsRef.current;
+    if (u) u.u_imgSat.value = imgSat;
+  }, [imgSat]);
+
+  useEffect(() => {
+    const u = uniformsRef.current;
+    if (u) u.u_imgLight.value = imgLight;
+  }, [imgLight]);
+
+  useEffect(() => {
+    const u = uniformsRef.current;
+    if (u && tex) u.u_tex.value = tex;
+  }, [tex]);
+
   // Responsive preview sizing
   useEffect(() => {
     const el = stageRef.current;
