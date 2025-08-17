@@ -860,57 +860,167 @@ export default function WebGLMandalaGenerator() {
         </div>
       </header>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Preview Canvas - Takes 2 columns on large screens */}
-        <div className="lg:col-span-2">
-          <Card className="bg-slate-900/50 border-slate-700/50 backdrop-blur-sm">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-medium text-slate-300">
-                  Live Preview
-                </CardTitle>
-                <div className="flex items-center gap-2">
-                  <div className="flex gap-1">
-                    {['1:1', '16:9', '9:16'].map((ratio) => (
-                      <Button
-                        key={ratio}
-                        size="sm"
-                        variant={aspect === ratio ? "default" : "outline"}
-                        onClick={() => setAspect(ratio)}
-                        className="text-xs px-2 py-1"
-                      >
-                        {ratio}
-                      </Button>
-                    ))}
+      {/* Spotify-like Main Layout */}
+      <div className="flex h-[calc(100vh-80px)]">
+        {/* Left Sidebar - Controls */}
+        <div className="w-80 bg-zinc-900 p-6 overflow-y-auto">
+          <div className="space-y-6">
+            {/* Tab Navigation */}
+            <div className="space-y-2">
+              {[
+                { id: 'geometry', label: 'Geometry', icon: Settings },
+                { id: 'colors', label: 'Colors', icon: Palette },
+                { id: 'kaleidoscope', label: 'Kaleidoscope', icon: Upload },
+                { id: 'effects', label: 'Effects', icon: Zap },
+                { id: 'text', label: 'Text', icon: Star }
+              ].map(({ id, label, icon: Icon }) => (
+                <Button
+                  key={id}
+                  variant="ghost"
+                  onClick={() => setActivePanel(id)}
+                  className={`w-full justify-start text-sm font-medium rounded-md transition-colors ${
+                    activePanel === id 
+                      ? 'bg-zinc-800 text-white' 
+                      : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50'
+                  }`}
+                >
+                  <Icon className="w-4 h-4 mr-3" />
+                  {label}
+                </Button>
+              ))}
+            </div>
+
+            {/* Panel Content */}
+            <div className="border-t border-zinc-800 pt-6">
+              {activePanel === 'geometry' && <GeometryPanel />}
+              
+              {activePanel === 'colors' && (
+                <div className="space-y-6">
+                  <h3 className="text-lg font-semibold text-white mb-4">Colors</h3>
+                  
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-3 gap-3">
+                      <div>
+                        <label className="text-sm font-medium text-zinc-300 block mb-2">Color 1</label>
+                        <Input 
+                          type="color" 
+                          value={col1} 
+                          onChange={(e) => setCol1(e.target.value)}
+                          className="h-10 p-1 border-0 bg-zinc-800 rounded-lg"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-zinc-300 block mb-2">Color 2</label>
+                        <Input 
+                          type="color" 
+                          value={col2} 
+                          onChange={(e) => setCol2(e.target.value)}
+                          className="h-10 p-1 border-0 bg-zinc-800 rounded-lg"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-zinc-300 block mb-2">Color 3</label>
+                        <Input 
+                          type="color" 
+                          value={col3} 
+                          onChange={(e) => setCol3(e.target.value)}
+                          className="h-10 p-1 border-0 bg-zinc-800 rounded-lg"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-medium text-zinc-300 block mb-2">Gradient Mix</label>
+                      <div className="text-xs text-zinc-500 mb-2">{Math.round(gradMix * 100)}%</div>
+                      <Slider 
+                        min={0} max={1} step={0.01} 
+                        value={[gradMix]} 
+                        onValueChange={([v]) => setGradMix(v)}
+                        className="w-full"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-medium text-zinc-300 block mb-3">Color Presets</label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {MODERN_PALETTES.map((palette, i) => (
+                          <Button
+                            key={i}
+                            size="sm"
+                            variant="outline"
+                            onClick={() => applyPalette(palette)}
+                            className="h-10 p-0 border-zinc-700 hover:border-zinc-500 rounded-lg overflow-hidden"
+                            style={{
+                              background: `linear-gradient(135deg, ${palette[0]}, ${palette[1]}, ${palette[2]})`
+                            }}
+                          />
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                  <Button 
-                    size="sm" 
-                    onClick={savePNG}
-                    className="bg-blue-600 hover:bg-blue-700"
-                  >
-                    <Download className="w-4 h-4 mr-1" />
-                    Export
-                  </Button>
                 </div>
+              )}
+
+              {/* Add other panels here */}
+            </div>
+          </div>
+        </div>
+
+        {/* Main Content Area */}
+        <div className="flex-1 bg-zinc-950 p-6">
+          <div className="h-full">
+            {/* Preview Header */}
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-xl font-bold text-white">Live Preview</h2>
+                <p className="text-sm text-zinc-400">Real-time mandala generation</p>
               </div>
-            </CardHeader>
-            <CardContent className="pb-4">
+              
+              <div className="flex items-center gap-3">
+                <div className="flex gap-1 bg-zinc-900 p-1 rounded-lg">
+                  {['1:1', '16:9', '9:16'].map((ratio) => (
+                    <Button
+                      key={ratio}
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setAspect(ratio)}
+                      className={`px-3 py-1 text-xs font-medium rounded-md ${
+                        aspect === ratio 
+                          ? 'bg-white text-black' 
+                          : 'text-zinc-400 hover:text-white'
+                      }`}
+                    >
+                      {ratio}
+                    </Button>
+                  ))}
+                </div>
+                <Button 
+                  onClick={savePNG}
+                  className="bg-green-500 hover:bg-green-600 text-black font-medium rounded-lg px-6"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Export
+                </Button>
+              </div>
+            </div>
+
+            {/* Canvas */}
+            <div className="h-[calc(100%-80px)]">
               <div 
                 ref={stageRef}
-                className="relative rounded-lg overflow-hidden bg-black ring-1 ring-slate-700/50 shadow-2xl"
+                className="w-full h-full relative rounded-xl overflow-hidden bg-black shadow-2xl border border-zinc-800"
                 style={{
                   aspectRatio: aspect === '1:1' ? '1 / 1' : (aspect === '16:9' ? '16 / 9' : '9 / 16'),
+                  maxHeight: '100%',
+                  maxWidth: '100%',
+                  margin: '0 auto'
                 }}
               >
                 <div ref={mountRef} className="absolute inset-0" />
                 <canvas ref={textCanvasRef} className="absolute inset-0 z-10 pointer-events-none" />
               </div>
-              <p className="mt-3 text-xs text-slate-400">
-                Export resolution: {size} × {Math.round(size * (aspect === '1:1' ? 1 : (aspect === '16:9' ? 9/16 : 16/9)))}px
-              </p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
         {/* Controls Panel */}
