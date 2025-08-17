@@ -1246,6 +1246,83 @@ export default function WebGLMandalaGenerator() {
                 </div>
               )}
             </div>
+
+            {/* Bottom Section - Presets and Export */}
+            <div className="border-t border-zinc-800 pt-6 mt-6 space-y-4">
+              <div className="space-y-3">
+                <h4 className="text-sm font-semibold text-white">Quick Actions</h4>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button 
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      const preset = {
+                        sym, glow, speed, scale, centerX, centerY,
+                        col1, col2, col3, gradMix, seed,
+                        starsOn, starDensity, starIntensity,
+                        effectType, effectAmp, effectFreq
+                      };
+                      const presetName = prompt("Enter preset name:");
+                      if (presetName) {
+                        localStorage.setItem(`mandala_preset_${presetName}`, JSON.stringify(preset));
+                        alert(`Preset "${presetName}" saved!`);
+                      }
+                    }}
+                    className="bg-zinc-800 hover:bg-zinc-700 border-zinc-700 text-zinc-300 text-xs"
+                  >
+                    Save
+                  </Button>
+                  <Button 
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      const presets = Object.keys(localStorage).filter(k => k.startsWith('mandala_preset_'));
+                      if (presets.length === 0) {
+                        alert("No presets found!");
+                        return;
+                      }
+                      const presetList = presets.map(k => k.replace('mandala_preset_', '')).join('\n');
+                      const presetName = prompt(`Available presets:\n${presetList}\n\nEnter preset name to load:`);
+                      if (presetName) {
+                        const preset = localStorage.getItem(`mandala_preset_${presetName}`);
+                        if (preset) {
+                          const data = JSON.parse(preset);
+                          setSym(data.sym); setGlow(data.glow); setSpeed(data.speed);
+                          setScale(data.scale); setCenterX(data.centerX); setCenterY(data.centerY);
+                          setCol1(data.col1); setCol2(data.col2); setCol3(data.col3);
+                          setGradMix(data.gradMix); setSeed(data.seed);
+                          setStarsOn(data.starsOn); setStarDensity(data.starDensity);
+                          setStarIntensity(data.starIntensity); setEffectType(data.effectType);
+                          setEffectAmp(data.effectAmp); setEffectFreq(data.effectFreq);
+                          alert(`Preset "${presetName}" loaded!`);
+                        } else {
+                          alert("Preset not found!");
+                        }
+                      }
+                    }}
+                    className="bg-zinc-800 hover:bg-zinc-700 border-zinc-700 text-zinc-300 text-xs"
+                  >
+                    Load
+                  </Button>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <h4 className="text-sm font-semibold text-white">Export</h4>
+                <div>
+                  <label className="text-xs text-zinc-400 block mb-2">Resolution (px)</label>
+                  <Input
+                    type="number"
+                    value={size}
+                    onChange={(e) => setSize(parseInt(e.target.value) || 1024)}
+                    min={256}
+                    max={8192}
+                    step={256}
+                    className="bg-zinc-800 border-zinc-700 text-zinc-300 text-sm"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
