@@ -967,7 +967,284 @@ export default function WebGLMandalaGenerator() {
                 </div>
               )}
 
-              {/* Add other panels here */}
+              {activePanel === 'kaleidoscope' && (
+                <div className="space-y-6">
+                  <h3 className="text-lg font-semibold text-white mb-4">Kaleidoscope</h3>
+                  
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-medium text-zinc-300">Image Upload</label>
+                      <Button
+                        size="sm"
+                        variant={useTex ? "default" : "outline"}
+                        onClick={() => setUseTex(!useTex)}
+                        className={useTex ? "bg-green-500 text-black hover:bg-green-600" : "bg-zinc-800 hover:bg-zinc-700 border-zinc-700"}
+                      >
+                        {useTex ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+                      </Button>
+                    </div>
+
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={onUploadImage}
+                      className="bg-zinc-800 border-zinc-700 text-zinc-300"
+                    />
+
+                    {useTex && (
+                      <div className="space-y-4 p-4 bg-zinc-800 rounded-lg">
+                        <div>
+                          <label className="text-sm font-medium text-zinc-300 block mb-2">Image Mix</label>
+                          <div className="text-xs text-zinc-500 mb-2">{Math.round(texMix * 100)}%</div>
+                          <Slider 
+                            min={0} max={1} step={0.01} 
+                            value={[texMix]} 
+                            onValueChange={([v]) => setTexMix(v)}
+                            className="w-full"
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="text-sm font-medium text-zinc-300 block mb-2">Scale</label>
+                            <div className="text-xs text-zinc-500 mb-2">{texScale.toFixed(2)}×</div>
+                            <Slider 
+                              min={0.1} max={5} step={0.01} 
+                              value={[texScale]} 
+                              onValueChange={([v]) => setTexScale(v)}
+                              className="w-full"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium text-zinc-300 block mb-2">Rotation</label>
+                            <div className="text-xs text-zinc-500 mb-2">{Math.round(texRot * 180/Math.PI)}°</div>
+                            <Slider 
+                              min={0} max={Math.PI * 2} step={0.01} 
+                              value={[texRot]} 
+                              onValueChange={([v]) => setTexRot(v)}
+                              className="w-full"
+                            />
+                          </div>
+                        </div>
+
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            setTexMix(1.0);
+                            setTexScale(1.0);
+                            setTexRot(0);
+                            setTexCX(0);
+                            setTexCY(0);
+                            setTexMirror(false);
+                            setImgHueDeg(0);
+                            setImgSat(1.0);
+                            setImgLight(0.0);
+                          }}
+                          className="w-full bg-zinc-700 hover:bg-zinc-600 border-zinc-600 text-zinc-300"
+                        >
+                          <RotateCcw className="w-3 h-3 mr-2" />
+                          Reset All Settings
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {activePanel === 'effects' && (
+                <div className="space-y-6">
+                  <h3 className="text-lg font-semibold text-white mb-4">Effects</h3>
+                  
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-sm font-medium text-zinc-300 block mb-2">Speed</label>
+                        <div className="text-xs text-zinc-500 mb-2">{speed.toFixed(2)}×</div>
+                        <Slider 
+                          min={0.1} max={2} step={0.05} 
+                          value={[speed]} 
+                          onValueChange={([v]) => setSpeed(v)}
+                          className="w-full"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-zinc-300 block mb-2">Glow</label>
+                        <div className="text-xs text-zinc-500 mb-2">{glow.toFixed(2)}×</div>
+                        <Slider 
+                          min={0.2} max={3} step={0.05} 
+                          value={[glow]} 
+                          onValueChange={([v]) => setGlow(v)}
+                          className="w-full"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-3 p-4 bg-zinc-800 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <label className="text-sm font-medium text-zinc-300">Stars</label>
+                        <Button
+                          size="sm"
+                          variant={starsOn ? "default" : "outline"}
+                          onClick={() => setStarsOn(!starsOn)}
+                          className={starsOn ? "bg-green-500 text-black hover:bg-green-600" : "bg-zinc-700 hover:bg-zinc-600 border-zinc-600"}
+                        >
+                          {starsOn ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+                        </Button>
+                      </div>
+                      {starsOn && (
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="text-xs text-zinc-400 block mb-1">Density</label>
+                            <Slider 
+                              min={0.01} max={0.2} step={0.01} 
+                              value={[starDensity]} 
+                              onValueChange={([v]) => setStarDensity(v)}
+                              className="w-full"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-xs text-zinc-400 block mb-1">Intensity</label>
+                            <Slider 
+                              min={0.1} max={1} step={0.1} 
+                              value={[starIntensity]} 
+                              onValueChange={([v]) => setStarIntensity(v)}
+                              className="w-full"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="space-y-3 p-4 bg-zinc-800 rounded-lg">
+                      <label className="text-sm font-medium text-zinc-300 block mb-3">Wave Effects</label>
+                      <div className="flex gap-2">
+                        {[
+                          { value: 0, label: 'None' },
+                          { value: 1, label: 'Ripple' },
+                          { value: 2, label: 'Wave' }
+                        ].map((effect) => (
+                          <Button
+                            key={effect.value}
+                            size="sm"
+                            variant={effectType === effect.value ? "default" : "outline"}
+                            onClick={() => setEffectType(effect.value)}
+                            className={`flex-1 text-xs ${
+                              effectType === effect.value 
+                                ? "bg-green-500 text-black hover:bg-green-600" 
+                                : "bg-zinc-700 hover:bg-zinc-600 border-zinc-600 text-zinc-300"
+                            }`}
+                          >
+                            {effect.label}
+                          </Button>
+                        ))}
+                      </div>
+                      {effectType > 0 && (
+                        <div className="grid grid-cols-2 gap-3 mt-3">
+                          <div>
+                            <label className="text-xs text-zinc-400 block mb-1">Amplitude</label>
+                            <Slider 
+                              min={0} max={1} step={0.01} 
+                              value={[effectAmp]} 
+                              onValueChange={([v]) => setEffectAmp(v)}
+                              className="w-full"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-xs text-zinc-400 block mb-1">Frequency</label>
+                            <Slider 
+                              min={0} max={2} step={0.01} 
+                              value={[effectFreq]} 
+                              onValueChange={([v]) => setEffectFreq(v)}
+                              className="w-full"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activePanel === 'text' && (
+                <div className="space-y-6">
+                  <h3 className="text-lg font-semibold text-white mb-4">Text Overlay</h3>
+                  
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-medium text-zinc-300">Enable Text</label>
+                      <Button
+                        size="sm"
+                        variant={textEnabled ? "default" : "outline"}
+                        onClick={() => setTextEnabled(!textEnabled)}
+                        className={textEnabled ? "bg-green-500 text-black hover:bg-green-600" : "bg-zinc-800 hover:bg-zinc-700 border-zinc-700"}
+                      >
+                        {textEnabled ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+                      </Button>
+                    </div>
+
+                    {textEnabled && (
+                      <div className="space-y-4">
+                        <div>
+                          <label className="text-sm font-medium text-zinc-300 block mb-2">Content</label>
+                          <textarea
+                            value={textValue}
+                            onChange={(e) => setTextValue(e.target.value)}
+                            className="w-full p-3 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100 resize-none"
+                            rows={3}
+                            placeholder="Enter your text..."
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="text-sm font-medium text-zinc-300 block mb-2">Size</label>
+                            <div className="text-xs text-zinc-500 mb-2">{textSize}px</div>
+                            <Slider 
+                              min={12} max={128} step={1} 
+                              value={[textSize]} 
+                              onValueChange={([v]) => setTextSize(v)}
+                              className="w-full"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium text-zinc-300 block mb-2">Color</label>
+                            <Input 
+                              type="color" 
+                              value={textColor} 
+                              onChange={(e) => setTextColor(e.target.value)}
+                              className="h-10 p-1 border-0 bg-zinc-800 rounded-lg"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="text-sm font-medium text-zinc-300 block mb-2">Position X</label>
+                            <div className="text-xs text-zinc-500 mb-2">{textX}%</div>
+                            <Slider 
+                              min={0} max={100} step={1} 
+                              value={[textX]} 
+                              onValueChange={([v]) => setTextX(v)}
+                              className="w-full"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium text-zinc-300 block mb-2">Position Y</label>
+                            <div className="text-xs text-zinc-500 mb-2">{textY}%</div>
+                            <Slider 
+                              min={0} max={100} step={1} 
+                              value={[textY]} 
+                              onValueChange={([v]) => setTextY(v)}
+                              className="w-full"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
