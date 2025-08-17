@@ -751,69 +751,75 @@ export default function WebGLMandalaGenerator() {
 
   // Panel components
   const GeometryPanel = () => (
-    <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-3">
+    <div className="space-y-6">
+      <h3 className="text-lg font-semibold text-white mb-4">Geometry</h3>
+      
+      <div className="space-y-4">
         <div>
-          <label className="text-xs font-medium text-slate-300">Symmetry</label>
-          <div className="text-xs text-slate-500 mb-2">{sym} segments</div>
+          <label className="text-sm font-medium text-zinc-300 block mb-2">Symmetry</label>
+          <div className="text-xs text-zinc-500 mb-2">{sym} segments</div>
           <Slider 
             min={3} max={32} step={1} 
             value={[sym]} 
             onValueChange={([v]) => setSym(v)}
-            className="accent-blue-500"
+            className="w-full"
           />
         </div>
+        
         <div>
-          <label className="text-xs font-medium text-slate-300">Scale</label>
-          <div className="text-xs text-slate-500 mb-2">{scale.toFixed(2)}</div>
+          <label className="text-sm font-medium text-zinc-300 block mb-2">Scale</label>
+          <div className="text-xs text-zinc-500 mb-2">{scale.toFixed(2)}×</div>
           <Slider 
             min={0.5} max={3} step={0.05} 
             value={[scale]} 
             onValueChange={([v]) => setScale(v)}
+            className="w-full"
           />
         </div>
-      </div>
-      
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className="text-xs font-medium text-slate-300">Center X</label>
-          <div className="text-xs text-slate-500 mb-2">{centerX.toFixed(2)}</div>
-          <Slider 
-            min={-0.5} max={0.5} step={0.01} 
-            value={[centerX]} 
-            onValueChange={([v]) => setCenterX(v)}
-          />
-        </div>
-        <div>
-          <label className="text-xs font-medium text-slate-300">Center Y</label>
-          <div className="text-xs text-slate-500 mb-2">{centerY.toFixed(2)}</div>
-          <Slider 
-            min={-0.5} max={0.5} step={0.01} 
-            value={[centerY]} 
-            onValueChange={([v]) => setCenterY(v)}
-          />
-        </div>
-      </div>
 
-      <div className="flex gap-2">
-        <Button 
-          size="sm" 
-          variant="outline"
-          onClick={() => setCenterX(0)}
-          className="flex-1 text-xs"
-        >
-          <RotateCcw className="w-3 h-3 mr-1" />
-          Reset X
-        </Button>
-        <Button 
-          size="sm" 
-          variant="outline"
-          onClick={() => setCenterY(0)}
-          className="flex-1 text-xs"
-        >
-          <RotateCcw className="w-3 h-3 mr-1" />
-          Reset Y
-        </Button>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="text-sm font-medium text-zinc-300 block mb-2">Center X</label>
+            <div className="text-xs text-zinc-500 mb-2">{centerX.toFixed(2)}</div>
+            <Slider 
+              min={-0.5} max={0.5} step={0.01} 
+              value={[centerX]} 
+              onValueChange={([v]) => setCenterX(v)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-zinc-300 block mb-2">Center Y</label>
+            <div className="text-xs text-zinc-500 mb-2">{centerY.toFixed(2)}</div>
+            <Slider 
+              min={-0.5} max={0.5} step={0.01} 
+              value={[centerY]} 
+              onValueChange={([v]) => setCenterY(v)}
+              className="w-full"
+            />
+          </div>
+        </div>
+
+        <div className="flex gap-2">
+          <Button 
+            size="sm" 
+            variant="outline"
+            onClick={() => setCenterX(0)}
+            className="flex-1 bg-zinc-800 hover:bg-zinc-700 border-zinc-700 text-zinc-300"
+          >
+            <RotateCcw className="w-3 h-3 mr-2" />
+            Reset X
+          </Button>
+          <Button 
+            size="sm" 
+            variant="outline"
+            onClick={() => setCenterY(0)}
+            className="flex-1 bg-zinc-800 hover:bg-zinc-700 border-zinc-700 text-zinc-300"
+          >
+            <RotateCcw className="w-3 h-3 mr-2" />
+            Reset Y
+          </Button>
+        </div>
       </div>
     </div>
   );
