@@ -879,6 +879,7 @@ export default function WebGLMandalaGenerator() {
       setImgSat(data.imgSat || 1.0); setImgLight(data.imgLight || 0);
       setAspect(data.aspect || '1:1'); setSize(data.size || 1024);
       setAudioIntensity(data.audioIntensity || 1.0); setAudioSensitivity(data.audioSensitivity || 0.5);
+      setAudioControlMode(data.audioControlMode || 'geometry');
     } catch (error) {
       console.error('Error loading preset:', error);
       alert('Error loading preset');
