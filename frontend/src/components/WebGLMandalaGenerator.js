@@ -807,6 +807,44 @@ export default function WebGLMandalaGenerator() {
               >
                 <div ref={mountRef} className="absolute inset-0" />
                 <canvas ref={textCanvasRef} className="absolute inset-0 z-10 pointer-events-none" />
+                
+                {/* Status Panel - Small overlay showing active features */}
+                <div className="absolute top-2 left-2 bg-black/50 backdrop-blur-sm rounded-lg p-2 z-20 text-xs text-white/80 space-y-1">
+                  <div className="font-medium text-white/90 mb-1">Active</div>
+                  {textEnabled && (
+                    <div className="flex items-center gap-1">
+                      <div className="w-1.5 h-1.5 bg-green-400 rounded-full"></div>
+                      <span>Text</span>
+                    </div>
+                  )}
+                  {starsOn && (
+                    <div className="flex items-center gap-1">
+                      <div className="w-1.5 h-1.5 bg-blue-400 rounded-full"></div>
+                      <span>Stars</span>
+                    </div>
+                  )}
+                  {useTex && (
+                    <div className="flex items-center gap-1">
+                      <div className="w-1.5 h-1.5 bg-purple-400 rounded-full"></div>
+                      <span>Image</span>
+                    </div>
+                  )}
+                  {effectType > 0 && (
+                    <div className="flex items-center gap-1">
+                      <div className="w-1.5 h-1.5 bg-orange-400 rounded-full"></div>
+                      <span>{effectType === 1 ? 'Ripple' : 'Wave'}</span>
+                    </div>
+                  )}
+                  {bgDim > 0 && (
+                    <div className="flex items-center gap-1">
+                      <div className="w-1.5 h-1.5 bg-yellow-400 rounded-full"></div>
+                      <span>Dim BG</span>
+                    </div>
+                  )}
+                  {(!textEnabled && !starsOn && !useTex && effectType === 0 && bgDim === 0) && (
+                    <div className="text-white/60">None</div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
