@@ -195,6 +195,30 @@ frontend:
       - working: false
         agent: "user"
         comment: "User reports Quick Actions (export functionality) is not working"
+        
+  - task: "Responsive Preview Sizing"
+    implemented: false
+    working: false
+    file: "components/WebGLMandalaGenerator.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User requests responsive preview sizing for 1:1, 16:9, 9:16 formats without compromising final export"
+        
+  - task: "Command Panel Status Display"
+    implemented: false
+    working: false
+    file: "components/WebGLMandalaGenerator.js"
+    stuck_count: 0
+    priority: "low"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User requests small command panel showing what features are on/off without interfering with artwork view"
 
 metadata:
   created_by: "main_agent"
