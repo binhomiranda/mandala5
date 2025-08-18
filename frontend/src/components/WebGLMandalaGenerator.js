@@ -284,6 +284,18 @@ export default function WebGLMandalaGenerator() {
   const [audioSensitivity, setAudioSensitivity] = useState(0.5);
   const audioDataRef = useRef(new Uint8Array(256));
 
+  // Audio recording
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordedAudio, setRecordedAudio] = useState(null);
+  const [mediaRecorder, setMediaRecorder] = useState(null);
+  const [recordingTime, setRecordingTime] = useState(0);
+  const [audioStream, setAudioStream] = useState(null);
+
+  // Presets management
+  const [savedPresets, setSavedPresets] = useState([]);
+  const [newPresetName, setNewPresetName] = useState("");
+  const [showPresetInput, setShowPresetInput] = useState(false);
+
   // Color vectors
   const col1Vec = useMemo(() => new THREE.Color(col1), [col1]);
   const col2Vec = useMemo(() => new THREE.Color(col2), [col2]);
