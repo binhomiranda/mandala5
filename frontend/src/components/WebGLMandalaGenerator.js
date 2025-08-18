@@ -1380,12 +1380,10 @@ export default function WebGLMandalaGenerator() {
           </div>
         </div>
 
-        {/* Controls Panel */}
-        <div className="space-y-4">
-          {/* Panel Tabs */}
-          <Card className="bg-slate-900/50 border-slate-700/50 backdrop-blur-sm">
-            <CardContent className="p-3">
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 mb-4">
+      </div>
+    </div>
+  );
+}
                 {[
                   { id: 'geometry', label: 'Geometry', icon: Settings },
                   { id: 'colors', label: 'Colors', icon: Palette },
