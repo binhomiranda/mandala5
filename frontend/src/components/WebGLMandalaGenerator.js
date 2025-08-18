@@ -1391,15 +1391,25 @@ export default function WebGLMandalaGenerator() {
                     variant="outline"
                     onClick={() => {
                       const preset = {
+                        // Core parameters
                         sym, glow, speed, scale, centerX, centerY,
                         col1, col2, col3, gradMix, seed,
-                        starsOn, starDensity, starIntensity,
-                        effectType, effectAmp, effectFreq
+                        // Effects
+                        starsOn, starDensity, starIntensity, starSeed,
+                        effectType, effectAmp, effectFreq,
+                        // Text
+                        textEnabled, textValue, textSize, textX, textY, 
+                        textAlign, textColor, textBold, bgDim,
+                        // Kaleidoscope  
+                        useTex, texMix, texScale, texRot, texCX, texCY, texMirror,
+                        imgHueDeg, imgSat, imgLight,
+                        // UI
+                        aspect, size
                       };
                       const presetName = prompt("Enter preset name:");
-                      if (presetName) {
-                        localStorage.setItem(`mandala_preset_${presetName}`, JSON.stringify(preset));
-                        alert(`Preset "${presetName}" saved!`);
+                      if (presetName && presetName.trim()) {
+                        localStorage.setItem(`mandala_preset_${presetName.trim()}`, JSON.stringify(preset));
+                        alert(`Preset "${presetName.trim()}" saved successfully!`);
                       }
                     }}
                     className="bg-zinc-800 hover:bg-zinc-700 border-zinc-700 text-zinc-300 text-xs"
