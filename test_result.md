@@ -183,15 +183,18 @@ frontend:
         
   - task: "Export Functionality"
     implemented: true
-    working: "NA"
+    working: false
     file: "components/WebGLMandalaGenerator.js"
-    stuck_count: 0
-    priority: "medium"
+    stuck_count: 1
+    priority: "high"
     needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Added PNG export with configurable resolution, aspect ratios, and composite rendering including text overlay"
+      - working: false
+        agent: "user"
+        comment: "User reports Quick Actions (export functionality) is not working"
 
 metadata:
   created_by: "main_agent"
