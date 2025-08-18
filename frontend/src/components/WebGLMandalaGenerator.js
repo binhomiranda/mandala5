@@ -1525,7 +1525,7 @@ export default function WebGLMandalaGenerator() {
                         <Slider 
                           min={0.1} max={2} step={0.05} 
                           value={[speed]} 
-                          onValueChange={([v]) => setSpeed(v)}
+                          onValueChange={manualSetSpeed}
                           className="w-full"
                         />
                       </div>
