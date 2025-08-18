@@ -888,12 +888,14 @@ export default function WebGLMandalaGenerator() {
     setAudioSource(null);
     setAudioElement(null);
     
-    // Clear user overrides
+    // CRITICAL: Clear ALL user overrides immediately when audio is disabled
     setUserOverride({});
     Object.keys(overrideTimerRef.current).forEach(key => {
       clearTimeout(overrideTimerRef.current[key]);
     });
     overrideTimerRef.current = {};
+    
+    console.log("Audio discarded and all overrides cleared");
   };
 
   // Preset management functions
