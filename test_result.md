@@ -168,15 +168,18 @@ frontend:
         
   - task: "Text Overlay System"
     implemented: true
-    working: "NA"
+    working: false
     file: "components/WebGLMandalaGenerator.js"
-    stuck_count: 0
-    priority: "medium"
+    stuck_count: 1
+    priority: "high"
     needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Implemented canvas-based text overlay system with positioning, sizing, color controls, and multi-line support"
+      - working: false
+        agent: "user"
+        comment: "User reports text functionality is not working"
         
   - task: "Export Functionality"
     implemented: true
