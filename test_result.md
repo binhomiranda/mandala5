@@ -218,8 +218,8 @@ frontend:
         comment: "Export functionality working perfectly! All aspect ratios (1:1, 16:9, 9:16) selectable and canvas updates accordingly. Resolution input accepts custom values (tested with 2048px). Export button present and functional. Quick Actions Save/Load preset buttons available and working. User's previous issue appears to be resolved."
         
   - task: "Responsive Preview Sizing"
-    implemented: false
-    working: false
+    implemented: true
+    working: true
     file: "components/WebGLMandalaGenerator.js"
     stuck_count: 0
     priority: "medium"
@@ -228,10 +228,13 @@ frontend:
       - working: false
         agent: "user"
         comment: "User requests responsive preview sizing for 1:1, 16:9, 9:16 formats without compromising final export"
+      - working: true
+        agent: "main"
+        comment: "Implemented responsive aspect ratio controls with proper canvas resizing. Preview dynamically adjusts to selected format while preserving export quality"
         
   - task: "Command Panel Status Display"
-    implemented: false
-    working: false
+    implemented: true
+    working: true
     file: "components/WebGLMandalaGenerator.js"
     stuck_count: 0
     priority: "low"
@@ -240,6 +243,9 @@ frontend:
       - working: false
         agent: "user"
         comment: "User requests small command panel showing what features are on/off without interfering with artwork view"
+      - working: true
+        agent: "main"
+        comment: "Implemented small status overlay panel in top-left corner showing active features (Text, Stars, Image, Effects, Dim BG) with colored indicators. Non-intrusive design that doesn't interfere with mandala viewing"
 
 metadata:
   created_by: "main_agent"
