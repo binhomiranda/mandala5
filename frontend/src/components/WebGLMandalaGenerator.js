@@ -1493,6 +1493,81 @@ export default function WebGLMandalaGenerator() {
                   </div>
                 </div>
               )}
+
+              {activePanel === 'audio' && (
+                <div className="space-y-6">
+                  <h3 className="text-lg font-semibold text-white mb-4">Audio-Reactive Mandalas</h3>
+                  <p className="text-sm text-zinc-400 mb-4">Upload audio (up to 1 minute) to generate reactive mandalas based on music frequencies</p>
+                  
+                  <div className="space-y-4">
+                    {/* Audio Upload */}
+                    <div className="p-4 bg-zinc-800 rounded-lg">
+                      <label className="text-sm font-medium text-zinc-300 block mb-3">Upload Audio File</label>
+                      <input
+                        type="file"
+                        accept="audio/*"
+                        onChange={handleAudioUpload}
+                        className="w-full p-2 bg-zinc-700 border border-zinc-600 rounded-lg text-zinc-300 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:bg-green-500 file:text-black hover:file:bg-green-600"
+                      />
+                      {audioFile && (
+                        <div className="mt-2 text-xs text-green-400">
+                          ✓ {audioFile.name} loaded
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Audio Controls */}
+                    {audioFile && (
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between p-4 bg-zinc-800 rounded-lg">
+                          <label className="text-sm font-medium text-zinc-300">Audio Reactive Mode</label>
+                          <Button
+                            size="sm"
+                            onClick={toggleAudio}
+                            className={audioEnabled ? "bg-green-500 text-black hover:bg-green-600" : "bg-zinc-700 hover:bg-zinc-600 border-zinc-600"}
+                          >
+                            {audioEnabled ? <Pause className="w-3 h-3 mr-2" /> : <Play className="w-3 h-3 mr-2" />}
+                            {audioEnabled ? 'Playing' : 'Play'}
+                          </Button>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="p-4 bg-zinc-800 rounded-lg">
+                            <label className="text-sm font-medium text-zinc-300 block mb-2">Intensity</label>
+                            <div className="text-xs text-zinc-400 mb-2">{(audioIntensity * 100).toFixed(0)}%</div>
+                            <Slider 
+                              min={0.1} max={2.0} step={0.1} 
+                              value={[audioIntensity]} 
+                              onValueChange={([v]) => setAudioIntensity(v)}
+                              className="w-full"
+                            />
+                          </div>
+                          <div className="p-4 bg-zinc-800 rounded-lg">
+                            <label className="text-sm font-medium text-zinc-300 block mb-2">Sensitivity</label>
+                            <div className="text-xs text-zinc-400 mb-2">{(audioSensitivity * 100).toFixed(0)}%</div>
+                            <Slider 
+                              min={0.1} max={1.0} step={0.1} 
+                              value={[audioSensitivity]} 
+                              onValueChange={([v]) => setAudioSensitivity(v)}
+                              className="w-full"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="p-3 bg-zinc-700 rounded-lg">
+                          <p className="text-xs text-zinc-400">
+                            <strong className="text-white">How it works:</strong><br/>
+                            • Bass frequencies control glow intensity<br/>
+                            • Mid frequencies affect animation speed<br/>
+                            • Treble frequencies modify scale<br/>
+                            • High intensity triggers color changes
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Bottom Section - Presets and Export */}
