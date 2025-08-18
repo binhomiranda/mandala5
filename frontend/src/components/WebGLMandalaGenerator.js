@@ -1795,10 +1795,23 @@ export default function WebGLMandalaGenerator() {
                             <span className="text-xs text-zinc-400">Recording... {recordingTime}s</span>
                           </div>
                         )}
+                        {recordedAudio && !isRecording && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={discardRecordedAudio}
+                            className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
+                          >
+                            <Trash2 className="w-3 h-3 mr-2" />
+                            Discard
+                          </Button>
+                        )}
                       </div>
                       {recordedAudio && (
-                        <div className="mt-2 text-xs text-green-400">
-                          ✓ Audio recorded successfully - {recordedAudio.name}
+                        <div className="mt-2 flex items-center justify-between">
+                          <span className="text-xs text-green-400">
+                            ✓ Audio recorded successfully - {recordedAudio.name}
+                          </span>
                         </div>
                       )}
                     </div>
