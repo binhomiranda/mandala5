@@ -1043,6 +1043,41 @@ export default function WebGLMandalaGenerator() {
                           </div>
                         </div>
 
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="text-sm font-medium text-zinc-300 block mb-2">Offset X</label>
+                            <div className="text-xs text-zinc-500 mb-2">{texCX.toFixed(2)}</div>
+                            <Slider 
+                              min={-1} max={1} step={0.01} 
+                              value={[texCX]} 
+                              onValueChange={([v]) => setTexCX(v)}
+                              className="w-full"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium text-zinc-300 block mb-2">Offset Y</label>
+                            <div className="text-xs text-zinc-500 mb-2">{texCY.toFixed(2)}</div>
+                            <Slider 
+                              min={-1} max={1} step={0.01} 
+                              value={[texCY]} 
+                              onValueChange={([v]) => setTexCY(v)}
+                              className="w-full"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between p-3 bg-zinc-700 rounded-lg">
+                          <label className="text-sm font-medium text-zinc-300">Mirror Edges</label>
+                          <Button
+                            size="sm"
+                            variant={texMirror ? "default" : "outline"}
+                            onClick={() => setTexMirror(!texMirror)}
+                            className={texMirror ? "bg-green-500 text-black hover:bg-green-600" : "bg-zinc-600 hover:bg-zinc-500 border-zinc-500 text-zinc-300"}
+                          >
+                            {texMirror ? "ON" : "OFF"}
+                          </Button>
+                        </div>
+
                         <Button
                           size="sm"
                           variant="outline"
