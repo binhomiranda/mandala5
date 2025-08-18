@@ -1422,23 +1422,43 @@ export default function WebGLMandalaGenerator() {
                     onClick={() => {
                       const presets = Object.keys(localStorage).filter(k => k.startsWith('mandala_preset_'));
                       if (presets.length === 0) {
-                        alert("No presets found!");
+                        alert("No presets found! Save a preset first.");
                         return;
                       }
                       const presetList = presets.map(k => k.replace('mandala_preset_', '')).join('\n');
                       const presetName = prompt(`Available presets:\n${presetList}\n\nEnter preset name to load:`);
-                      if (presetName) {
-                        const preset = localStorage.getItem(`mandala_preset_${presetName}`);
+                      if (presetName && presetName.trim()) {
+                        const preset = localStorage.getItem(`mandala_preset_${presetName.trim()}`);
                         if (preset) {
-                          const data = JSON.parse(preset);
-                          setSym(data.sym); setGlow(data.glow); setSpeed(data.speed);
-                          setScale(data.scale); setCenterX(data.centerX); setCenterY(data.centerY);
-                          setCol1(data.col1); setCol2(data.col2); setCol3(data.col3);
-                          setGradMix(data.gradMix); setSeed(data.seed);
-                          setStarsOn(data.starsOn); setStarDensity(data.starDensity);
-                          setStarIntensity(data.starIntensity); setEffectType(data.effectType);
-                          setEffectAmp(data.effectAmp); setEffectFreq(data.effectFreq);
-                          alert(`Preset "${presetName}" loaded!`);
+                          try {
+                            const data = JSON.parse(preset);
+                            // Core parameters
+                            setSym(data.sym || 12); setGlow(data.glow || 1.2); setSpeed(data.speed || 0.6);
+                            setScale(data.scale || 1.2); setCenterX(data.centerX || 0); setCenterY(data.centerY || 0);
+                            setCol1(data.col1 || "#ff6b6b"); setCol2(data.col2 || "#ffa726"); setCol3(data.col3 || "#ffcc02");
+                            setGradMix(data.gradMix || 0.7); setSeed(data.seed || Math.random());
+                            // Effects
+                            setStarsOn(data.starsOn || false); setStarDensity(data.starDensity || 0.05);
+                            setStarIntensity(data.starIntensity || 0.8); setStarSeed(data.starSeed || Math.random());
+                            setEffectType(data.effectType || 0); setEffectAmp(data.effectAmp || 0.3); 
+                            setEffectFreq(data.effectFreq || 0.8);
+                            // Text
+                            setTextEnabled(data.textEnabled || false); setTextValue(data.textValue || "Mandala Art");
+                            setTextSize(data.textSize || 48); setTextX(data.textX || 50); setTextY(data.textY || 50);
+                            setTextAlign(data.textAlign || 'center'); setTextColor(data.textColor || "#ffffff");
+                            setTextBold(data.textBold || false); setBgDim(data.bgDim || 0);
+                            // Kaleidoscope
+                            setUseTex(data.useTex || false); setTexMix(data.texMix || 1.0); setTexScale(data.texScale || 1.0);
+                            setTexRot(data.texRot || 0); setTexCX(data.texCX || 0); setTexCY(data.texCY || 0);
+                            setTexMirror(data.texMirror || false); setImgHueDeg(data.imgHueDeg || 0);
+                            setImgSat(data.imgSat || 1.0); setImgLight(data.imgLight || 0);
+                            // UI
+                            setAspect(data.aspect || '1:1'); setSize(data.size || 1024);
+                            
+                            alert(`Preset "${presetName.trim()}" loaded successfully!`);
+                          } catch (error) {
+                            alert("Error loading preset. It may be corrupted.");
+                          }
                         } else {
                           alert("Preset not found!");
                         }
