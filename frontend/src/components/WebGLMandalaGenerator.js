@@ -663,11 +663,6 @@ export default function WebGLMandalaGenerator() {
   const manualSetTexMix = useMemo(() => createManualSetter(setTexMix, 'texMix'), [createManualSetter]);
   const manualSetTexCX = useMemo(() => createManualSetter(setTexCX, 'texCX'), [createManualSetter]);
   const manualSetTexCY = useMemo(() => createManualSetter(setTexCY, 'texCY'), [createManualSetter]);
-  
-  // Manual setters for color controls - ALWAYS MANUAL when audio is active
-  const manualSetCol1 = useMemo(() => createManualSetter(setCol1, 'col1'), [createManualSetter]);
-  const manualSetCol2 = useMemo(() => createManualSetter(setCol2, 'col2'), [createManualSetter]);
-  const manualSetCol3 = useMemo(() => createManualSetter(setCol3, 'col3'), [createManualSetter]);
 
   // Audio processing functions
   const handleAudioUpload = async (event) => {
