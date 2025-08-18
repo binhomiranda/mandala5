@@ -618,6 +618,39 @@ export default function WebGLMandalaGenerator() {
     drawTextOverlay();
   }, [textEnabled, textValue, textSize, textX, textY, textAlign, textColor, textBold]);
 
+  // User override system - prevents audio from overriding manual changes
+  const createManualSetter = (originalSetter, paramName) => {
+    return (value) => {
+      // Set user override flag
+      setUserOverride(prev => ({ ...prev, [paramName]: true }));
+      
+      // Clear override after 3 seconds
+      if (overrideTimerRef.current[paramName]) {
+        clearTimeout(overrideTimerRef.current[paramName]);
+      }
+      overrideTimerRef.current[paramName] = setTimeout(() => {
+        setUserOverride(prev => ({ ...prev, [paramName]: false }));
+      }, 3000);
+      
+      // Call original setter
+      if (Array.isArray(value)) {
+        originalSetter(value[0]); // For slider values that come as arrays
+      } else {
+        originalSetter(value);
+      }
+    };
+  };
+
+  // Manual setters that override audio control
+  const manualSetGlow = createManualSetter(setGlow, 'glow');
+  const manualSetSpeed = createManualSetter(setSpeed, 'speed');
+  const manualSetScale = createManualSetter(setScale, 'scale');
+  const manualSetTexScale = createManualSetter(setTexScale, 'texScale');
+  const manualSetTexRot = createManualSetter(setTexRot, 'texRot');
+  const manualSetTexMix = createManualSetter(setTexMix, 'texMix');
+  const manualSetTexCX = createManualSetter(setTexCX, 'texCX');
+  const manualSetTexCY = createManualSetter(setTexCY, 'texCY');
+
   // Audio processing functions
   const handleAudioUpload = async (event) => {
     const file = event.target.files[0];
