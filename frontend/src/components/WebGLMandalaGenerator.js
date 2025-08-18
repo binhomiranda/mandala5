@@ -660,7 +660,6 @@ export default function WebGLMandalaGenerator() {
   const manualSetScale = useMemo(() => createManualSetter(setScale, 'scale'), [createManualSetter]);
   const manualSetTexScale = useMemo(() => createManualSetter(setTexScale, 'texScale'), [createManualSetter]);
   const manualSetTexRot = useMemo(() => createManualSetter(setTexRot, 'texRot'), [createManualSetter]);
-  const manualSetTexMix = useMemo(() => createManualSetter(setTexMix, 'texMix'), [createManualSetter]);
   const manualSetTexCX = useMemo(() => createManualSetter(setTexCX, 'texCX'), [createManualSetter]);
   const manualSetTexCY = useMemo(() => createManualSetter(setTexCY, 'texCY'), [createManualSetter]);
 
