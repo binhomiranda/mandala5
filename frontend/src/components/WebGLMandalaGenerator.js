@@ -273,6 +273,17 @@ export default function WebGLMandalaGenerator() {
   const [imgSat, setImgSat] = useState(1.0);
   const [imgLight, setImgLight] = useState(0.0);
 
+  // Audio analysis
+  const [audioEnabled, setAudioEnabled] = useState(false);
+  const [audioFile, setAudioFile] = useState(null);
+  const [audioContext, setAudioContext] = useState(null);
+  const [analyser, setAnalyser] = useState(null);
+  const [audioSource, setAudioSource] = useState(null);
+  const [audioElement, setAudioElement] = useState(null);
+  const [audioIntensity, setAudioIntensity] = useState(1.0);
+  const [audioSensitivity, setAudioSensitivity] = useState(0.5);
+  const audioDataRef = useRef(new Uint8Array(256));
+
   // Color vectors
   const col1Vec = useMemo(() => new THREE.Color(col1), [col1]);
   const col2Vec = useMemo(() => new THREE.Color(col2), [col2]);
