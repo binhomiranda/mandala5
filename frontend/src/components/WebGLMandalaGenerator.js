@@ -750,7 +750,7 @@ export default function WebGLMandalaGenerator() {
           // NO COLOR CONTROL BY AUDIO - User maintains full control over colors
         }
         
-        // Control kaleidoscope parameters
+        // Control kaleidoscope parameters - EXCLUDING texMix (Image Mix) for user control
         if ((audioControlMode === 'kaleidoscope' || audioControlMode === 'both') && useTex) {
           // Bass controls image scale
           if (!userOverride.texScale) setTexScale(0.5 + bassNorm * 2.0);
@@ -760,8 +760,8 @@ export default function WebGLMandalaGenerator() {
           const rotationSpeed = midNorm * 2.0;
           if (!userOverride.texRot) setTexRot((currentTime * rotationSpeed) % (Math.PI * 2));
           
-          // Treble controls mix intensity
-          if (!userOverride.texMix) setTexMix(0.3 + trebleNorm * 0.7);
+          // REMOVED: Treble controls mix intensity - USER MAINTAINS FULL CONTROL
+          // texMix is now 100% user controlled
           
           // Combined frequencies create subtle position movement
           const positionIntensity = (bassNorm + midNorm + trebleNorm) / 3;
