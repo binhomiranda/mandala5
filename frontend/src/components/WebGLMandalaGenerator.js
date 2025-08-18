@@ -1383,7 +1383,8 @@ export default function WebGLMandalaGenerator() {
             {/* Bottom Section - Presets and Export */}
             <div className="border-t border-zinc-800 pt-6 mt-6 space-y-4">
               <div className="space-y-3">
-                <h4 className="text-sm font-semibold text-white">Quick Actions</h4>
+                <h4 className="text-sm font-semibold text-white">Quick Actions - Save Presets</h4>
+                <p className="text-xs text-zinc-400">Save and load your mandala configurations</p>
                 <div className="grid grid-cols-2 gap-2">
                   <Button 
                     size="sm"
