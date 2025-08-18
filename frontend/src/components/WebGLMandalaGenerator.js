@@ -1912,8 +1912,8 @@ export default function WebGLMandalaGenerator() {
                                 • Bass frequencies → Glow intensity<br/>
                                 • Mid frequencies → Animation speed<br/>
                                 • Treble frequencies → Scale<br/>
-                                • High intensity → Color changes (auto)<br/>
-                                <span className="text-green-400">✓ Colors remain user-controllable during audio playback</span><br/>
+                                • Effects amplitude → Auto-adjusted<br/>
+                                <span className="text-green-400">✓ Colors always remain under your full control</span><br/>
                                 <span className="text-yellow-400">💡 Manual adjustments pause audio control for 3 seconds</span>
                               </>
                             )}
@@ -1923,7 +1923,7 @@ export default function WebGLMandalaGenerator() {
                                 • Mid frequencies → Image rotation<br/>
                                 • Treble frequencies → Mix intensity<br/>
                                 • Combined → Position movement & HSL shifts<br/>
-                                <span className="text-green-400">✓ Colors remain user-controllable during audio playback</span><br/>
+                                <span className="text-green-400">✓ Colors always remain under your full control</span><br/>
                                 <span className="text-yellow-400">💡 Manual adjustments pause audio control for 3 seconds</span>
                               </>
                             )}
@@ -1932,8 +1932,8 @@ export default function WebGLMandalaGenerator() {
                                 • Bass → Glow intensity + Image scale<br/>
                                 • Mid → Animation speed + Image rotation<br/>
                                 • Treble → Mandala scale + Mix intensity<br/>
-                                • High intensity → Colors (auto) + Position + HSL<br/>
-                                <span className="text-green-400">✓ Colors remain user-controllable during audio playback</span><br/>
+                                • Combined → Position + HSL shifts<br/>
+                                <span className="text-green-400">✓ Colors always remain under your full control</span><br/>
                                 <span className="text-yellow-400">💡 Manual adjustments pause audio control for 3 seconds</span>
                               </>
                             )}
