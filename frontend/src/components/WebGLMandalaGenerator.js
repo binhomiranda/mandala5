@@ -283,7 +283,9 @@ export default function WebGLMandalaGenerator() {
   const [audioIntensity, setAudioIntensity] = useState(1.0);
   const [audioSensitivity, setAudioSensitivity] = useState(0.5);
   const [audioControlMode, setAudioControlMode] = useState('geometry'); // 'geometry', 'kaleidoscope', 'both'
+  const [userOverride, setUserOverride] = useState({}); // Track manual user changes
   const audioDataRef = useRef(new Uint8Array(256));
+  const overrideTimerRef = useRef({});
 
   // Audio recording
   const [isRecording, setIsRecording] = useState(false);
