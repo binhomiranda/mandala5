@@ -1655,7 +1655,7 @@ export default function WebGLMandalaGenerator() {
               {activePanel === 'audio' && (
                 <div className="space-y-6">
                   <h3 className="text-lg font-semibold text-white mb-4">Audio-Reactive Mandalas</h3>
-                  <p className="text-sm text-zinc-400 mb-4">Upload audio (up to 1 minute) to generate reactive mandalas based on music frequencies</p>
+                  <p className="text-sm text-zinc-400 mb-4">Upload or record audio (up to 1 minute) to generate reactive mandalas based on music frequencies</p>
                   
                   <div className="space-y-4">
                     {/* Audio Upload */}
@@ -1667,15 +1667,50 @@ export default function WebGLMandalaGenerator() {
                         onChange={handleAudioUpload}
                         className="w-full p-2 bg-zinc-700 border border-zinc-600 rounded-lg text-zinc-300 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:bg-green-500 file:text-black hover:file:bg-green-600"
                       />
-                      {audioFile && (
+                      {audioFile && !recordedAudio && (
                         <div className="mt-2 text-xs text-green-400">
                           ✓ {audioFile.name} loaded
                         </div>
                       )}
                     </div>
 
+                    {/* Audio Recording */}
+                    <div className="p-4 bg-zinc-800 rounded-lg">
+                      <label className="text-sm font-medium text-zinc-300 block mb-3">Record Your Own Audio</label>
+                      <div className="flex items-center gap-3">
+                        <Button
+                          size="sm"
+                          onClick={isRecording ? stopRecording : startRecording}
+                          className={isRecording ? "bg-red-500 text-white hover:bg-red-600" : "bg-green-500 text-black hover:bg-green-600"}
+                        >
+                          {isRecording ? (
+                            <>
+                              <Square className="w-3 h-3 mr-2" />
+                              Stop ({60 - recordingTime}s)
+                            </>
+                          ) : (
+                            <>
+                              <Mic className="w-3 h-3 mr-2" />
+                              Record
+                            </>
+                          )}
+                        </Button>
+                        {isRecording && (
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                            <span className="text-xs text-zinc-400">Recording... {recordingTime}s</span>
+                          </div>
+                        )}
+                      </div>
+                      {recordedAudio && (
+                        <div className="mt-2 text-xs text-green-400">
+                          ✓ Audio recorded successfully - {recordedAudio.name}
+                        </div>
+                      )}
+                    </div>
+
                     {/* Audio Controls */}
-                    {audioFile && (
+                    {(audioFile || recordedAudio) && (
                       <div className="space-y-4">
                         <div className="flex items-center justify-between p-4 bg-zinc-800 rounded-lg">
                           <label className="text-sm font-medium text-zinc-300">Audio Reactive Mode</label>
