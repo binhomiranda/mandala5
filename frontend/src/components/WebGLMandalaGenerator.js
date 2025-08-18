@@ -866,13 +866,67 @@ export default function WebGLMandalaGenerator() {
         </div>
       </header>
 
-      {/* Spotify-like Main Layout */}
-      <div className="flex h-[calc(100vh-80px)]">
-        {/* Left Sidebar - Controls */}
-        <div className="w-80 bg-zinc-900 p-6 overflow-y-auto">
-          <div className="space-y-6">
+      {/* Main Content with Right Sidebar */}
+      <div className="max-w-7xl mx-auto px-6 py-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Preview Canvas - Takes 2 columns on large screens */}
+        <div className="lg:col-span-2">
+          <div className="bg-zinc-950 rounded-xl border border-zinc-800 overflow-hidden">
+            {/* Preview Header */}
+            <div className="flex items-center justify-between p-4 bg-zinc-900 border-b border-zinc-800">
+              <div>
+                <h2 className="text-lg font-bold text-white">Live Preview</h2>
+                <p className="text-sm text-zinc-400">Real-time mandala generation</p>
+              </div>
+              
+              <div className="flex items-center gap-3">
+                <div className="flex gap-1 bg-zinc-800 p-1 rounded-lg">
+                  {['1:1', '16:9', '9:16'].map((ratio) => (
+                    <Button
+                      key={ratio}
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setAspect(ratio)}
+                      className={`px-3 py-1 text-xs font-medium rounded-md ${
+                        aspect === ratio 
+                          ? 'bg-white text-black' 
+                          : 'text-zinc-400 hover:text-white'
+                      }`}
+                    >
+                      {ratio}
+                    </Button>
+                  ))}
+                </div>
+                <Button 
+                  onClick={savePNG}
+                  className="bg-green-500 hover:bg-green-600 text-black font-medium rounded-lg px-4"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Export
+                </Button>
+              </div>
+            </div>
+
+            {/* Canvas */}
+            <div className="p-4 bg-black">
+              <div 
+                ref={stageRef}
+                className="w-full relative rounded-lg overflow-hidden bg-black shadow-2xl"
+                style={{
+                  aspectRatio: aspect === '1:1' ? '1 / 1' : (aspect === '16:9' ? '16 / 9' : '9 / 16'),
+                }}
+              >
+                <div ref={mountRef} className="absolute inset-0" />
+                <canvas ref={textCanvasRef} className="absolute inset-0 z-10 pointer-events-none" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Sidebar - Controls */}
+        <div className="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden">
+          <div className="p-4 h-full overflow-y-auto">
             {/* Tab Navigation */}
-            <div className="space-y-2">
+            <div className="space-y-2 mb-6">
               {[
                 { id: 'geometry', label: 'Geometry', icon: Settings },
                 { id: 'colors', label: 'Colors', icon: Palette },
@@ -1321,63 +1375,6 @@ export default function WebGLMandalaGenerator() {
                     className="bg-zinc-800 border-zinc-700 text-zinc-300 text-sm"
                   />
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Main Content Area */}
-        <div className="flex-1 bg-zinc-950 p-6">
-          <div className="h-full">
-            {/* Preview Header */}
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h2 className="text-xl font-bold text-white">Live Preview</h2>
-                <p className="text-sm text-zinc-400">Real-time mandala generation</p>
-              </div>
-              
-              <div className="flex items-center gap-3">
-                <div className="flex gap-1 bg-zinc-900 p-1 rounded-lg">
-                  {['1:1', '16:9', '9:16'].map((ratio) => (
-                    <Button
-                      key={ratio}
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => setAspect(ratio)}
-                      className={`px-3 py-1 text-xs font-medium rounded-md ${
-                        aspect === ratio 
-                          ? 'bg-white text-black' 
-                          : 'text-zinc-400 hover:text-white'
-                      }`}
-                    >
-                      {ratio}
-                    </Button>
-                  ))}
-                </div>
-                <Button 
-                  onClick={savePNG}
-                  className="bg-green-500 hover:bg-green-600 text-black font-medium rounded-lg px-6"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Export
-                </Button>
-              </div>
-            </div>
-
-            {/* Canvas */}
-            <div className="h-[calc(100%-80px)]">
-              <div 
-                ref={stageRef}
-                className="w-full h-full relative rounded-xl overflow-hidden bg-black shadow-2xl border border-zinc-800"
-                style={{
-                  aspectRatio: aspect === '1:1' ? '1 / 1' : (aspect === '16:9' ? '16 / 9' : '9 / 16'),
-                  maxHeight: '100%',
-                  maxWidth: '100%',
-                  margin: '0 auto'
-                }}
-              >
-                <div ref={mountRef} className="absolute inset-0" />
-                <canvas ref={textCanvasRef} className="absolute inset-0 z-10 pointer-events-none" />
               </div>
             </div>
           </div>
