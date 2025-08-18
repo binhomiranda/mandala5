@@ -752,21 +752,7 @@ export default function WebGLMandalaGenerator() {
           // Update effect amplitude based on audio
           setEffectAmp(0.3 + bassNorm * 0.7);
           
-          // Subtle color shifts based on frequency - but respect user overrides
-          const hueShift = (bassNorm + midNorm + trebleNorm) / 3;
-          if (hueShift > 0.3) {
-            // Cycle through color palettes based on intensity
-            const paletteIndex = Math.floor(hueShift * MODERN_PALETTES.length) % MODERN_PALETTES.length;
-            const palette = MODERN_PALETTES[paletteIndex];
-            if (Math.random() < 0.1) { // Only change occasionally to avoid flickering
-              // Only change colors if user is not manually controlling them
-              if (!userOverride.col1 && !userOverride.col2 && !userOverride.col3) {
-                setCol1(palette[0]);
-                setCol2(palette[1]);
-                setCol3(palette[2]);
-              }
-            }
-          }
+          // NO COLOR CONTROL BY AUDIO - User maintains full control over colors
         }
         
         // Control kaleidoscope parameters
