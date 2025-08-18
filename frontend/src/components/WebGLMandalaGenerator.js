@@ -1764,96 +1764,94 @@ export default function WebGLMandalaGenerator() {
             </div>
 
             {/* Bottom Section - Presets and Export */}
-            <div className="border-t border-zinc-800 pt-6 mt-6 space-y-4">
-              <div className="space-y-3">
-                <h4 className="text-sm font-semibold text-white">Quick Actions - Save Presets</h4>
-                <p className="text-xs text-zinc-400">Save and load your mandala configurations</p>
-                <div className="grid grid-cols-2 gap-2">
-                  <Button 
+            <div className="border-t border-zinc-800 pt-6 mt-6 space-y-6">
+              {/* Preset Management */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="text-sm font-semibold text-white">Saved Presets</h4>
+                    <p className="text-xs text-zinc-400">Save and manage your mandala configurations</p>
+                  </div>
+                  <Button
                     size="sm"
-                    variant="outline"
-                    onClick={() => {
-                      const preset = {
-                        // Core parameters
-                        sym, glow, speed, scale, centerX, centerY,
-                        col1, col2, col3, gradMix, seed,
-                        // Effects
-                        starsOn, starDensity, starIntensity, starSeed,
-                        effectType, effectAmp, effectFreq,
-                        // Text
-                        textEnabled, textValue, textSize, textX, textY, 
-                        textAlign, textColor, textBold, bgDim,
-                        // Kaleidoscope  
-                        useTex, texMix, texScale, texRot, texCX, texCY, texMirror,
-                        imgHueDeg, imgSat, imgLight,
-                        // UI
-                        aspect, size
-                      };
-                      const presetName = prompt("Enter preset name:");
-                      if (presetName && presetName.trim()) {
-                        localStorage.setItem(`mandala_preset_${presetName.trim()}`, JSON.stringify(preset));
-                        alert(`Preset "${presetName.trim()}" saved successfully!`);
-                      }
-                    }}
-                    className="bg-zinc-800 hover:bg-zinc-700 border-zinc-700 text-zinc-300 text-xs"
+                    onClick={() => setShowPresetInput(!showPresetInput)}
+                    className="bg-green-500 text-black hover:bg-green-600"
                   >
-                    Save
-                  </Button>
-                  <Button 
-                    size="sm"
-                    variant="outline"
-                    onClick={() => {
-                      const presets = Object.keys(localStorage).filter(k => k.startsWith('mandala_preset_'));
-                      if (presets.length === 0) {
-                        alert("No presets found! Save a preset first.");
-                        return;
-                      }
-                      const presetList = presets.map(k => k.replace('mandala_preset_', '')).join('\n');
-                      const presetName = prompt(`Available presets:\n${presetList}\n\nEnter preset name to load:`);
-                      if (presetName && presetName.trim()) {
-                        const preset = localStorage.getItem(`mandala_preset_${presetName.trim()}`);
-                        if (preset) {
-                          try {
-                            const data = JSON.parse(preset);
-                            // Core parameters
-                            setSym(data.sym || 12); setGlow(data.glow || 1.2); setSpeed(data.speed || 0.6);
-                            setScale(data.scale || 1.2); setCenterX(data.centerX || 0); setCenterY(data.centerY || 0);
-                            setCol1(data.col1 || "#ff6b6b"); setCol2(data.col2 || "#ffa726"); setCol3(data.col3 || "#ffcc02");
-                            setGradMix(data.gradMix || 0.7); setSeed(data.seed || Math.random());
-                            // Effects
-                            setStarsOn(data.starsOn || false); setStarDensity(data.starDensity || 0.05);
-                            setStarIntensity(data.starIntensity || 0.8); setStarSeed(data.starSeed || Math.random());
-                            setEffectType(data.effectType || 0); setEffectAmp(data.effectAmp || 0.3); 
-                            setEffectFreq(data.effectFreq || 0.8);
-                            // Text
-                            setTextEnabled(data.textEnabled || false); setTextValue(data.textValue || "Mandala Art");
-                            setTextSize(data.textSize || 48); setTextX(data.textX || 50); setTextY(data.textY || 50);
-                            setTextAlign(data.textAlign || 'center'); setTextColor(data.textColor || "#ffffff");
-                            setTextBold(data.textBold || false); setBgDim(data.bgDim || 0);
-                            // Kaleidoscope
-                            setUseTex(data.useTex || false); setTexMix(data.texMix || 1.0); setTexScale(data.texScale || 1.0);
-                            setTexRot(data.texRot || 0); setTexCX(data.texCX || 0); setTexCY(data.texCY || 0);
-                            setTexMirror(data.texMirror || false); setImgHueDeg(data.imgHueDeg || 0);
-                            setImgSat(data.imgSat || 1.0); setImgLight(data.imgLight || 0);
-                            // UI
-                            setAspect(data.aspect || '1:1'); setSize(data.size || 1024);
-                            
-                            alert(`Preset "${presetName.trim()}" loaded successfully!`);
-                          } catch (error) {
-                            alert("Error loading preset. It may be corrupted.");
-                          }
-                        } else {
-                          alert("Preset not found!");
-                        }
-                      }
-                    }}
-                    className="bg-zinc-800 hover:bg-zinc-700 border-zinc-700 text-zinc-300 text-xs"
-                  >
-                    Load
+                    <Plus className="w-3 h-3 mr-2" />
+                    New Preset
                   </Button>
                 </div>
+
+                {/* New Preset Input */}
+                {showPresetInput && (
+                  <div className="p-4 bg-zinc-800 rounded-lg">
+                    <div className="flex gap-2">
+                      <Input
+                        value={newPresetName}
+                        onChange={(e) => setNewPresetName(e.target.value)}
+                        placeholder="Enter preset name..."
+                        className="bg-zinc-700 border-zinc-600 text-zinc-300"
+                        onKeyPress={(e) => e.key === 'Enter' && savePreset()}
+                      />
+                      <Button
+                        size="sm"
+                        onClick={savePreset}
+                        disabled={!newPresetName.trim()}
+                        className="bg-green-500 text-black hover:bg-green-600 disabled:bg-zinc-600 disabled:text-zinc-400"
+                      >
+                        <Check className="w-3 h-3" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setShowPresetInput(false);
+                          setNewPresetName("");
+                        }}
+                        className="border-zinc-600 hover:bg-zinc-700"
+                      >
+                        <X className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Saved Presets List */}
+                {savedPresets.length > 0 && (
+                  <div className="space-y-2">
+                    {savedPresets.map((preset) => (
+                      <div key={preset.key} className="flex items-center gap-2 p-3 bg-zinc-800 rounded-lg">
+                        <div className="flex-1">
+                          <span className="text-sm font-medium text-zinc-300">{preset.name}</span>
+                        </div>
+                        <Button
+                          size="sm"
+                          onClick={() => loadPreset(preset)}
+                          className="bg-blue-500 text-white hover:bg-blue-600"
+                        >
+                          Load
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => deletePreset(preset)}
+                          className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {savedPresets.length === 0 && !showPresetInput && (
+                  <div className="p-4 bg-zinc-800 rounded-lg text-center">
+                    <p className="text-sm text-zinc-400">No presets saved yet. Create your first preset!</p>
+                  </div>
+                )}
               </div>
 
+              {/* Export Section */}
               <div className="space-y-3">
                 <h4 className="text-sm font-semibold text-white">Export</h4>
                 <div>
