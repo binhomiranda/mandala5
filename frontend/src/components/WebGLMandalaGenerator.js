@@ -922,38 +922,38 @@ export default function WebGLMandalaGenerator() {
                   
                   <div className="space-y-4">
                     <div className="grid grid-cols-3 gap-3">
-                      <div>
+                      <div className="p-3 bg-zinc-800 rounded-lg">
                         <label className="text-sm font-medium text-zinc-300 block mb-2">Color 1</label>
                         <Input 
                           type="color" 
                           value={col1} 
                           onChange={(e) => setCol1(e.target.value)}
-                          className="h-10 p-1 border-0 bg-zinc-800 rounded-lg"
+                          className="h-10 p-1 border-0 bg-zinc-700 rounded-lg"
                         />
                       </div>
-                      <div>
+                      <div className="p-3 bg-zinc-800 rounded-lg">
                         <label className="text-sm font-medium text-zinc-300 block mb-2">Color 2</label>
                         <Input 
                           type="color" 
                           value={col2} 
                           onChange={(e) => setCol2(e.target.value)}
-                          className="h-10 p-1 border-0 bg-zinc-800 rounded-lg"
+                          className="h-10 p-1 border-0 bg-zinc-700 rounded-lg"
                         />
                       </div>
-                      <div>
+                      <div className="p-3 bg-zinc-800 rounded-lg">
                         <label className="text-sm font-medium text-zinc-300 block mb-2">Color 3</label>
                         <Input 
                           type="color" 
                           value={col3} 
                           onChange={(e) => setCol3(e.target.value)}
-                          className="h-10 p-1 border-0 bg-zinc-800 rounded-lg"
+                          className="h-10 p-1 border-0 bg-zinc-700 rounded-lg"
                         />
                       </div>
                     </div>
 
-                    <div>
+                    <div className="p-4 bg-zinc-800 rounded-lg">
                       <label className="text-sm font-medium text-zinc-300 block mb-2">Gradient Mix</label>
-                      <div className="text-xs text-zinc-500 mb-2">{Math.round(gradMix * 100)}%</div>
+                      <div className="text-xs text-zinc-400 mb-2">{Math.round(gradMix * 100)}%</div>
                       <Slider 
                         min={0} max={1} step={0.01} 
                         value={[gradMix]} 
@@ -962,7 +962,7 @@ export default function WebGLMandalaGenerator() {
                       />
                     </div>
 
-                    <div>
+                    <div className="p-4 bg-zinc-800 rounded-lg">
                       <label className="text-sm font-medium text-zinc-300 block mb-3">Color Presets</label>
                       <div className="grid grid-cols-2 gap-2">
                         {MODERN_PALETTES.map((palette, i) => (
@@ -971,7 +971,7 @@ export default function WebGLMandalaGenerator() {
                             size="sm"
                             variant="outline"
                             onClick={() => applyPalette(palette)}
-                            className="h-10 p-0 border-zinc-700 hover:border-zinc-500 rounded-lg overflow-hidden"
+                            className="h-10 p-0 border-zinc-600 hover:border-zinc-500 rounded-lg overflow-hidden"
                             style={{
                               background: `linear-gradient(135deg, ${palette[0]}, ${palette[1]}, ${palette[2]})`
                             }}
