@@ -718,6 +718,146 @@ export default function WebGLMandalaGenerator() {
     return () => cancelAnimationFrame(animationId);
   }, [audioEnabled, analyser, audioIntensity, audioSensitivity]);
 
+  // Load saved presets on component mount
+  useEffect(() => {
+    const loadPresets = () => {
+      const presets = Object.keys(localStorage)
+        .filter(k => k.startsWith('mandala_preset_'))
+        .map(k => ({
+          key: k,
+          name: k.replace('mandala_preset_', ''),
+          data: JSON.parse(localStorage.getItem(k))
+        }));
+      setSavedPresets(presets);
+    };
+    loadPresets();
+  }, []);
+
+  // Audio recording functions
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      setAudioStream(stream);
+      
+      const recorder = new MediaRecorder(stream);
+      const chunks = [];
+      
+      recorder.ondataavailable = (event) => {
+        chunks.push(event.data);
+      };
+      
+      recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'audio/wav' });
+        const audioFile = new File([blob], 'recorded_audio.wav', { type: 'audio/wav' });
+        setRecordedAudio(audioFile);
+        
+        // Auto-load the recorded audio
+        handleAudioUpload({ target: { files: [audioFile] } });
+      };
+      
+      setMediaRecorder(recorder);
+      recorder.start();
+      setIsRecording(true);
+      setRecordingTime(0);
+      
+      // Recording timer (max 60 seconds)
+      const timer = setInterval(() => {
+        setRecordingTime(prev => {
+          if (prev >= 60) {
+            stopRecording();
+            return 60;
+          }
+          return prev + 1;
+        });
+      }, 1000);
+      
+      // Auto-stop after 60 seconds
+      setTimeout(() => {
+        if (recorder.state === 'recording') {
+          stopRecording();
+        }
+        clearInterval(timer);
+      }, 60000);
+      
+    } catch (error) {
+      console.error('Error accessing microphone:', error);
+      alert('Could not access microphone. Please check permissions.');
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+      mediaRecorder.stop();
+    }
+    if (audioStream) {
+      audioStream.getTracks().forEach(track => track.stop());
+    }
+    setIsRecording(false);
+    setRecordingTime(0);
+  };
+
+  // Preset management functions
+  const savePreset = () => {
+    if (!newPresetName.trim()) return;
+    
+    const preset = {
+      sym, glow, speed, scale, centerX, centerY,
+      col1, col2, col3, gradMix, seed,
+      starsOn, starDensity, starIntensity,
+      effectType, effectAmp, effectFreq,
+      textEnabled, textValue, textSize, textX, textY,
+      textAlign, textColor, textBold, bgDim,
+      useTex, texMix, texScale, texRot, texCX, texCY, texMirror,
+      imgHueDeg, imgSat, imgLight,
+      aspect, size, audioIntensity, audioSensitivity
+    };
+    
+    const presetKey = `mandala_preset_${newPresetName.trim()}`;
+    localStorage.setItem(presetKey, JSON.stringify(preset));
+    
+    // Update saved presets list
+    const newPreset = {
+      key: presetKey,
+      name: newPresetName.trim(),
+      data: preset
+    };
+    setSavedPresets(prev => [...prev.filter(p => p.name !== newPresetName.trim()), newPreset]);
+    
+    setNewPresetName("");
+    setShowPresetInput(false);
+  };
+
+  const loadPreset = (preset) => {
+    try {
+      const data = preset.data;
+      setSym(data.sym || 12); setGlow(data.glow || 1.2); setSpeed(data.speed || 0.6);
+      setScale(data.scale || 1.2); setCenterX(data.centerX || 0); setCenterY(data.centerY || 0);
+      setCol1(data.col1 || "#ff6b6b"); setCol2(data.col2 || "#ffa726"); setCol3(data.col3 || "#ffcc02");
+      setGradMix(data.gradMix || 0.7); setSeed(data.seed || Math.random());
+      setStarsOn(data.starsOn || false); setStarDensity(data.starDensity || 0.05);
+      setStarIntensity(data.starIntensity || 0.8); setEffectType(data.effectType || 0);
+      setEffectAmp(data.effectAmp || 0.3); setEffectFreq(data.effectFreq || 0.8);
+      setTextEnabled(data.textEnabled || false); setTextValue(data.textValue || "Mandala Art");
+      setTextSize(data.textSize || 48); setTextX(data.textX || 50); setTextY(data.textY || 50);
+      setTextAlign(data.textAlign || 'center'); setTextColor(data.textColor || "#ffffff");
+      setTextBold(data.textBold || false); setBgDim(data.bgDim || 0);
+      setUseTex(data.useTex || false); setTexMix(data.texMix || 1.0); setTexScale(data.texScale || 1.0);
+      setTexRot(data.texRot || 0); setTexCX(data.texCX || 0); setTexCY(data.texCY || 0);
+      setTexMirror(data.texMirror || false); setImgHueDeg(data.imgHueDeg || 0);
+      setImgSat(data.imgSat || 1.0); setImgLight(data.imgLight || 0);
+      setAspect(data.aspect || '1:1'); setSize(data.size || 1024);
+      setAudioIntensity(data.audioIntensity || 1.0); setAudioSensitivity(data.audioSensitivity || 0.5);
+    } catch (error) {
+      console.error('Error loading preset:', error);
+      alert('Error loading preset');
+    }
+  };
+
+  const deletePreset = (preset) => {
+    localStorage.removeItem(preset.key);
+    setSavedPresets(prev => prev.filter(p => p.key !== preset.key));
+  };
+
   // Export functionality
   const savePNG = () => {
     const r = rendererRef.current;
