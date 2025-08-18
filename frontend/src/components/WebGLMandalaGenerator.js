@@ -1926,8 +1926,9 @@ export default function WebGLMandalaGenerator() {
                                 • Bass frequencies → Glow intensity<br/>
                                 • Mid frequencies → Animation speed<br/>
                                 • Treble frequencies → Scale<br/>
-                                • High intensity → Color changes & effects<br/>
-                                <span className="text-yellow-400">💡 Tip: Manual adjustments pause audio control for 3 seconds</span>
+                                • High intensity → Color changes (auto)<br/>
+                                <span className="text-green-400">✓ Colors remain user-controllable during audio playback</span><br/>
+                                <span className="text-yellow-400">💡 Manual adjustments pause audio control for 3 seconds</span>
                               </>
                             )}
                             {audioControlMode === 'kaleidoscope' && (
@@ -1936,7 +1937,8 @@ export default function WebGLMandalaGenerator() {
                                 • Mid frequencies → Image rotation<br/>
                                 • Treble frequencies → Mix intensity<br/>
                                 • Combined → Position movement & HSL shifts<br/>
-                                <span className="text-yellow-400">💡 Tip: Manual adjustments pause audio control for 3 seconds</span>
+                                <span className="text-green-400">✓ Colors remain user-controllable during audio playback</span><br/>
+                                <span className="text-yellow-400">💡 Manual adjustments pause audio control for 3 seconds</span>
                               </>
                             )}
                             {audioControlMode === 'both' && (
@@ -1944,8 +1946,9 @@ export default function WebGLMandalaGenerator() {
                                 • Bass → Glow intensity + Image scale<br/>
                                 • Mid → Animation speed + Image rotation<br/>
                                 • Treble → Mandala scale + Mix intensity<br/>
-                                • High intensity → Colors + Position + HSL<br/>
-                                <span className="text-yellow-400">💡 Tip: Manual adjustments pause audio control for 3 seconds</span>
+                                • High intensity → Colors (auto) + Position + HSL<br/>
+                                <span className="text-green-400">✓ Colors remain user-controllable during audio playback</span><br/>
+                                <span className="text-yellow-400">💡 Manual adjustments pause audio control for 3 seconds</span>
                               </>
                             )}
                           </p>
