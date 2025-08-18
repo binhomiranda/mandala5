@@ -1447,7 +1447,7 @@ export default function WebGLMandalaGenerator() {
                             <Slider 
                               min={0} max={Math.PI * 2} step={0.01} 
                               value={[texRot]} 
-                              onValueChange={([v]) => setTexRot(v)}
+                              onValueChange={manualSetTexRot}
                               className="w-full"
                             />
                           </div>
