@@ -241,3 +241,7 @@ test_plan:
 agent_communication:
   - agent: "main"
     message: "Implemented complete WebGL Mandala Generator with modern UI, fixed potential bugs in shader code, added comprehensive error handling, and enhanced features with tabbed interface, modern color palettes, and improved UX. Ready for frontend testing to verify all functionality works correctly."
+  - agent: "user"
+    message: "Text functionality is not working. Quick Actions not working. Need bug analysis and responsive preview sizing features."
+  - agent: "main"
+    message: "Updated test priorities. Will first test backend, then analyze and fix text and export functionality bugs before implementing new responsive preview features."
