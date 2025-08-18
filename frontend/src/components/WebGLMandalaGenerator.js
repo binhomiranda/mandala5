@@ -847,9 +847,9 @@ export default function WebGLMandalaGenerator() {
                   <h3 className="text-lg font-semibold text-white mb-4">Geometry</h3>
                   
                   <div className="space-y-4">
-                    <div>
+                    <div className="p-4 bg-zinc-800 rounded-lg">
                       <label className="text-sm font-medium text-zinc-300 block mb-2">Symmetry</label>
-                      <div className="text-xs text-zinc-500 mb-2">{sym} segments</div>
+                      <div className="text-xs text-zinc-400 mb-2">{sym} segments</div>
                       <Slider 
                         min={3} max={32} step={1} 
                         value={[sym]} 
@@ -858,9 +858,9 @@ export default function WebGLMandalaGenerator() {
                       />
                     </div>
                     
-                    <div>
+                    <div className="p-4 bg-zinc-800 rounded-lg">
                       <label className="text-sm font-medium text-zinc-300 block mb-2">Scale</label>
-                      <div className="text-xs text-zinc-500 mb-2">{scale.toFixed(2)}×</div>
+                      <div className="text-xs text-zinc-400 mb-2">{scale.toFixed(2)}×</div>
                       <Slider 
                         min={0.5} max={3} step={0.05} 
                         value={[scale]} 
@@ -869,10 +869,10 @@ export default function WebGLMandalaGenerator() {
                       />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="p-4 bg-zinc-800 rounded-lg">
                         <label className="text-sm font-medium text-zinc-300 block mb-2">Center X</label>
-                        <div className="text-xs text-zinc-500 mb-2">{centerX.toFixed(2)}</div>
+                        <div className="text-xs text-zinc-400 mb-2">{centerX.toFixed(2)}</div>
                         <Slider 
                           min={-0.5} max={0.5} step={0.01} 
                           value={[centerX]} 
@@ -880,9 +880,9 @@ export default function WebGLMandalaGenerator() {
                           className="w-full"
                         />
                       </div>
-                      <div>
+                      <div className="p-4 bg-zinc-800 rounded-lg">
                         <label className="text-sm font-medium text-zinc-300 block mb-2">Center Y</label>
-                        <div className="text-xs text-zinc-500 mb-2">{centerY.toFixed(2)}</div>
+                        <div className="text-xs text-zinc-400 mb-2">{centerY.toFixed(2)}</div>
                         <Slider 
                           min={-0.5} max={0.5} step={0.01} 
                           value={[centerY]} 
@@ -897,7 +897,7 @@ export default function WebGLMandalaGenerator() {
                         size="sm" 
                         variant="outline"
                         onClick={() => setCenterX(0)}
-                        className="flex-1 bg-zinc-800 hover:bg-zinc-700 border-zinc-700 text-zinc-300"
+                        className="flex-1 bg-zinc-700 hover:bg-zinc-600 border-zinc-600 text-zinc-300"
                       >
                         <RotateCcw className="w-3 h-3 mr-2" />
                         Reset X
@@ -906,7 +906,7 @@ export default function WebGLMandalaGenerator() {
                         size="sm" 
                         variant="outline"
                         onClick={() => setCenterY(0)}
-                        className="flex-1 bg-zinc-800 hover:bg-zinc-700 border-zinc-700 text-zinc-300"
+                        className="flex-1 bg-zinc-700 hover:bg-zinc-600 border-zinc-600 text-zinc-300"
                       >
                         <RotateCcw className="w-3 h-3 mr-2" />
                         Reset Y
