@@ -603,6 +603,109 @@ export default function WebGLMandalaGenerator() {
     drawTextOverlay();
   }, [textEnabled, textValue, textSize, textX, textY, textAlign, textColor, textBold]);
 
+  // Audio processing functions
+  const handleAudioUpload = async (event) => {
+    const file = event.target.files[0];
+    if (file && file.type.startsWith('audio/')) {
+      // Check file size (limit to ~10MB for 1 minute of audio)
+      if (file.size > 10 * 1024 * 1024) {
+        alert("File too large. Please use audio files under 10MB (approximately 1 minute).");
+        return;
+      }
+      
+      setAudioFile(file);
+      
+      // Create audio context and elements
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const audio = new Audio();
+      audio.src = URL.createObjectURL(file);
+      audio.loop = true;
+      
+      // Create analyser
+      const analyserNode = audioCtx.createAnalyser();
+      analyserNode.fftSize = 512;
+      const source = audioCtx.createMediaElementSource(audio);
+      source.connect(analyserNode);
+      analyserNode.connect(audioCtx.destination);
+      
+      setAudioContext(audioCtx);
+      setAnalyser(analyserNode);
+      setAudioSource(source);
+      setAudioElement(audio);
+      
+      console.log("Audio loaded successfully!");
+    } else {
+      alert("Please select a valid audio file.");
+    }
+  };
+
+  const toggleAudio = () => {
+    if (!audioElement) return;
+    
+    if (audioEnabled) {
+      audioElement.pause();
+      setAudioEnabled(false);
+    } else {
+      audioElement.play().then(() => {
+        setAudioEnabled(true);
+      }).catch(err => {
+        console.error("Error playing audio:", err);
+        alert("Error playing audio. Try a different file.");
+      });
+    }
+  };
+
+  // Audio analysis effect
+  useEffect(() => {
+    if (!audioEnabled || !analyser) return;
+    
+    const updateAudioData = () => {
+      if (analyser && audioEnabled) {
+        analyser.getByteFrequencyData(audioDataRef.current);
+        
+        // Calculate average frequency levels for different ranges
+        const data = audioDataRef.current;
+        const bass = Array.from(data.slice(0, 32)).reduce((a, b) => a + b, 0) / 32;
+        const mid = Array.from(data.slice(32, 128)).reduce((a, b) => a + b, 0) / 96;
+        const treble = Array.from(data.slice(128, 256)).reduce((a, b) => a + b, 0) / 128;
+        
+        // Map audio to mandala parameters
+        const intensity = audioIntensity * audioSensitivity;
+        
+        // Adjust mandala based on audio
+        const bassNorm = (bass / 255) * intensity;
+        const midNorm = (mid / 255) * intensity;
+        const trebleNorm = (treble / 255) * intensity;
+        
+        // Update parameters based on audio frequencies
+        setGlow(1.2 + bassNorm * 2.0);
+        setSpeed(0.6 + midNorm * 1.5);
+        setScale(1.2 + trebleNorm * 1.0);
+        
+        // Subtle color shifts based on frequency
+        const hueShift = (bassNorm + midNorm + trebleNorm) / 3;
+        if (hueShift > 0.3) {
+          // Cycle through color palettes based on intensity
+          const paletteIndex = Math.floor(hueShift * MODERN_PALETTES.length) % MODERN_PALETTES.length;
+          const palette = MODERN_PALETTES[paletteIndex];
+          if (Math.random() < 0.1) { // Only change occasionally to avoid flickering
+            setCol1(palette[0]);
+            setCol2(palette[1]);
+            setCol3(palette[2]);
+          }
+        }
+        
+        // Update effect amplitude based on audio
+        setEffectAmp(0.3 + bassNorm * 0.7);
+        
+        requestAnimationFrame(updateAudioData);
+      }
+    };
+    
+    const animationId = requestAnimationFrame(updateAudioData);
+    return () => cancelAnimationFrame(animationId);
+  }, [audioEnabled, analyser, audioIntensity, audioSensitivity]);
+
   // Export functionality
   const savePNG = () => {
     const r = rendererRef.current;
