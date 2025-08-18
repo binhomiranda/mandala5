@@ -690,26 +690,57 @@ export default function WebGLMandalaGenerator() {
         const midNorm = (mid / 255) * intensity;
         const trebleNorm = (treble / 255) * intensity;
         
-        // Update parameters based on audio frequencies
-        setGlow(1.2 + bassNorm * 2.0);
-        setSpeed(0.6 + midNorm * 1.5);
-        setScale(1.2 + trebleNorm * 1.0);
-        
-        // Subtle color shifts based on frequency
-        const hueShift = (bassNorm + midNorm + trebleNorm) / 3;
-        if (hueShift > 0.3) {
-          // Cycle through color palettes based on intensity
-          const paletteIndex = Math.floor(hueShift * MODERN_PALETTES.length) % MODERN_PALETTES.length;
-          const palette = MODERN_PALETTES[paletteIndex];
-          if (Math.random() < 0.1) { // Only change occasionally to avoid flickering
-            setCol1(palette[0]);
-            setCol2(palette[1]);
-            setCol3(palette[2]);
+        // Control geometry parameters
+        if (audioControlMode === 'geometry' || audioControlMode === 'both') {
+          setGlow(1.2 + bassNorm * 2.0);
+          setSpeed(0.6 + midNorm * 1.5);
+          setScale(1.2 + trebleNorm * 1.0);
+          
+          // Update effect amplitude based on audio
+          setEffectAmp(0.3 + bassNorm * 0.7);
+          
+          // Subtle color shifts based on frequency
+          const hueShift = (bassNorm + midNorm + trebleNorm) / 3;
+          if (hueShift > 0.3) {
+            // Cycle through color palettes based on intensity
+            const paletteIndex = Math.floor(hueShift * MODERN_PALETTES.length) % MODERN_PALETTES.length;
+            const palette = MODERN_PALETTES[paletteIndex];
+            if (Math.random() < 0.1) { // Only change occasionally to avoid flickering
+              setCol1(palette[0]);
+              setCol2(palette[1]);
+              setCol3(palette[2]);
+            }
           }
         }
         
-        // Update effect amplitude based on audio
-        setEffectAmp(0.3 + bassNorm * 0.7);
+        // Control kaleidoscope parameters
+        if ((audioControlMode === 'kaleidoscope' || audioControlMode === 'both') && useTex) {
+          // Bass controls image scale
+          setTexScale(0.5 + bassNorm * 2.0);
+          
+          // Mid frequencies control rotation (smoother rotation)
+          const currentTime = Date.now() / 1000;
+          const rotationSpeed = midNorm * 2.0;
+          setTexRot((currentTime * rotationSpeed) % (Math.PI * 2));
+          
+          // Treble controls mix intensity
+          setTexMix(0.3 + trebleNorm * 0.7);
+          
+          // Combined frequencies create subtle position movement
+          const positionIntensity = (bassNorm + midNorm + trebleNorm) / 3;
+          if (positionIntensity > 0.2) {
+            const moveX = Math.sin(currentTime * 0.5) * positionIntensity * 0.3;
+            const moveY = Math.cos(currentTime * 0.7) * positionIntensity * 0.3;
+            setTexCX(moveX);
+            setTexCY(moveY);
+          }
+          
+          // High intensity can trigger HSL adjustments
+          if (positionIntensity > 0.6) {
+            setImgHueDeg((currentTime * 30) % 360);
+            setImgSat(0.8 + positionIntensity * 0.4);
+          }
+        }
         
         requestAnimationFrame(updateAudioData);
       }
