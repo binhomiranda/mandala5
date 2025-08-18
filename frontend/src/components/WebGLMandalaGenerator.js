@@ -239,18 +239,18 @@ export default function WebGLMandalaGenerator() {
 
   // Text overlay
   const textCanvasRef = useRef(null);
-  const [textEnabled, setTextEnabled] = useState(true);
+  const [textEnabled, setTextEnabled] = useState(false);
   const [textValue, setTextValue] = useState("Mandala Art");
   const [textSize, setTextSize] = useState(48);
   const [textX, setTextX] = useState(50);
-  const [textY, setTextY] = useState(85);
+  const [textY, setTextY] = useState(50);
   const [textAlign, setTextAlign] = useState('center');
   const [textColor, setTextColor] = useState("#ffffff");
   const [textBold, setTextBold] = useState(false);
   const [bgDim, setBgDim] = useState(0);
 
   // Stars
-  const [starsOn, setStarsOn] = useState(true);
+  const [starsOn, setStarsOn] = useState(false);
   const [starDensity, setStarDensity] = useState(0.05);
   const [starIntensity, setStarIntensity] = useState(0.8);
   const [starSeed, setStarSeed] = useState(Math.random());
