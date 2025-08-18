@@ -1425,7 +1425,7 @@ export default function WebGLMandalaGenerator() {
                           <Slider 
                             min={0} max={1} step={0.01} 
                             value={[texMix]} 
-                            onValueChange={([v]) => setTexMix(v)}
+                            onValueChange={manualSetTexMix}
                             className="w-full"
                           />
                         </div>
