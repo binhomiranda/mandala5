@@ -1108,10 +1108,10 @@ export default function WebGLMandalaGenerator() {
                   <h3 className="text-lg font-semibold text-white mb-4">Effects</h3>
                   
                   <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="p-4 bg-zinc-800 rounded-lg">
                         <label className="text-sm font-medium text-zinc-300 block mb-2">Speed</label>
-                        <div className="text-xs text-zinc-500 mb-2">{speed.toFixed(2)}×</div>
+                        <div className="text-xs text-zinc-400 mb-2">{speed.toFixed(2)}×</div>
                         <Slider 
                           min={0.1} max={2} step={0.05} 
                           value={[speed]} 
@@ -1119,9 +1119,9 @@ export default function WebGLMandalaGenerator() {
                           className="w-full"
                         />
                       </div>
-                      <div>
+                      <div className="p-4 bg-zinc-800 rounded-lg">
                         <label className="text-sm font-medium text-zinc-300 block mb-2">Glow</label>
-                        <div className="text-xs text-zinc-500 mb-2">{glow.toFixed(2)}×</div>
+                        <div className="text-xs text-zinc-400 mb-2">{glow.toFixed(2)}×</div>
                         <Slider 
                           min={0.2} max={3} step={0.05} 
                           value={[glow]} 
@@ -1147,6 +1147,7 @@ export default function WebGLMandalaGenerator() {
                         <div className="grid grid-cols-2 gap-3">
                           <div>
                             <label className="text-xs text-zinc-400 block mb-1">Density</label>
+                            <div className="text-xs text-zinc-500 mb-1">{(starDensity * 100).toFixed(1)}%</div>
                             <Slider 
                               min={0.01} max={0.2} step={0.01} 
                               value={[starDensity]} 
@@ -1156,6 +1157,7 @@ export default function WebGLMandalaGenerator() {
                           </div>
                           <div>
                             <label className="text-xs text-zinc-400 block mb-1">Intensity</label>
+                            <div className="text-xs text-zinc-500 mb-1">{(starIntensity * 100).toFixed(0)}%</div>
                             <Slider 
                               min={0.1} max={1} step={0.1} 
                               value={[starIntensity]} 
@@ -1194,6 +1196,7 @@ export default function WebGLMandalaGenerator() {
                         <div className="grid grid-cols-2 gap-3 mt-3">
                           <div>
                             <label className="text-xs text-zinc-400 block mb-1">Amplitude</label>
+                            <div className="text-xs text-zinc-500 mb-1">{(effectAmp * 100).toFixed(0)}%</div>
                             <Slider 
                               min={0} max={1} step={0.01} 
                               value={[effectAmp]} 
@@ -1203,6 +1206,7 @@ export default function WebGLMandalaGenerator() {
                           </div>
                           <div>
                             <label className="text-xs text-zinc-400 block mb-1">Frequency</label>
+                            <div className="text-xs text-zinc-500 mb-1">{effectFreq.toFixed(2)}</div>
                             <Slider 
                               min={0} max={2} step={0.01} 
                               value={[effectFreq]} 
