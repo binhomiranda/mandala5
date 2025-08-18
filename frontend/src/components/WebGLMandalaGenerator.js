@@ -1780,6 +1780,47 @@ export default function WebGLMandalaGenerator() {
                           </div>
                         </div>
 
+                        {/* Audio Control Mode */}
+                        <div className="p-4 bg-zinc-800 rounded-lg">
+                          <label className="text-sm font-medium text-zinc-300 block mb-3">Audio Controls</label>
+                          <div className="grid grid-cols-3 gap-2">
+                            <Button
+                              size="sm"
+                              onClick={() => setAudioControlMode('geometry')}
+                              className={audioControlMode === 'geometry' 
+                                ? "bg-blue-500 text-white hover:bg-blue-600" 
+                                : "bg-zinc-700 hover:bg-zinc-600 text-zinc-300"}
+                            >
+                              Geometry
+                            </Button>
+                            <Button
+                              size="sm"
+                              onClick={() => setAudioControlMode('kaleidoscope')}
+                              disabled={!useTex}
+                              className={audioControlMode === 'kaleidoscope' 
+                                ? "bg-purple-500 text-white hover:bg-purple-600" 
+                                : "bg-zinc-700 hover:bg-zinc-600 text-zinc-300 disabled:bg-zinc-800 disabled:text-zinc-500"}
+                            >
+                              Kaleidoscope
+                            </Button>
+                            <Button
+                              size="sm"
+                              onClick={() => setAudioControlMode('both')}
+                              className={audioControlMode === 'both' 
+                                ? "bg-green-500 text-black hover:bg-green-600" 
+                                : "bg-zinc-700 hover:bg-zinc-600 text-zinc-300"}
+                            >
+                              Both
+                            </Button>
+                          </div>
+                          <div className="mt-2 text-xs text-zinc-400">
+                            {audioControlMode === 'geometry' && "Controls: Glow, Speed, Scale, Colors, Effects"}
+                            {audioControlMode === 'kaleidoscope' && useTex && "Controls: Image Scale, Rotation, Mix, Position, HSL"}
+                            {audioControlMode === 'kaleidoscope' && !useTex && "Upload an image in Kaleidoscope tab to enable"}
+                            {audioControlMode === 'both' && "Controls: All geometry + kaleidoscope parameters"}
+                          </div>
+                        </div>
+
                         <div className="p-3 bg-zinc-700 rounded-lg">
                           <p className="text-xs text-zinc-400">
                             <strong className="text-white">How it works:</strong><br/>
