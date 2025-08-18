@@ -727,9 +727,9 @@ export default function WebGLMandalaGenerator() {
         
         // Control geometry parameters
         if (audioControlMode === 'geometry' || audioControlMode === 'both') {
-          setGlow(1.2 + bassNorm * 2.0);
-          setSpeed(0.6 + midNorm * 1.5);
-          setScale(1.2 + trebleNorm * 1.0);
+          if (!userOverride.glow) setGlow(1.2 + bassNorm * 2.0);
+          if (!userOverride.speed) setSpeed(0.6 + midNorm * 1.5);
+          if (!userOverride.scale) setScale(1.2 + trebleNorm * 1.0);
           
           // Update effect amplitude based on audio
           setEffectAmp(0.3 + bassNorm * 0.7);
@@ -751,23 +751,23 @@ export default function WebGLMandalaGenerator() {
         // Control kaleidoscope parameters
         if ((audioControlMode === 'kaleidoscope' || audioControlMode === 'both') && useTex) {
           // Bass controls image scale
-          setTexScale(0.5 + bassNorm * 2.0);
+          if (!userOverride.texScale) setTexScale(0.5 + bassNorm * 2.0);
           
           // Mid frequencies control rotation (smoother rotation)
           const currentTime = Date.now() / 1000;
           const rotationSpeed = midNorm * 2.0;
-          setTexRot((currentTime * rotationSpeed) % (Math.PI * 2));
+          if (!userOverride.texRot) setTexRot((currentTime * rotationSpeed) % (Math.PI * 2));
           
           // Treble controls mix intensity
-          setTexMix(0.3 + trebleNorm * 0.7);
+          if (!userOverride.texMix) setTexMix(0.3 + trebleNorm * 0.7);
           
           // Combined frequencies create subtle position movement
           const positionIntensity = (bassNorm + midNorm + trebleNorm) / 3;
           if (positionIntensity > 0.2) {
             const moveX = Math.sin(currentTime * 0.5) * positionIntensity * 0.3;
             const moveY = Math.cos(currentTime * 0.7) * positionIntensity * 0.3;
-            setTexCX(moveX);
-            setTexCY(moveY);
+            if (!userOverride.texCX) setTexCX(moveX);
+            if (!userOverride.texCY) setTexCY(moveY);
           }
           
           // High intensity can trigger HSL adjustments
