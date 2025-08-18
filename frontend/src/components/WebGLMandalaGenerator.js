@@ -783,7 +783,7 @@ export default function WebGLMandalaGenerator() {
     
     const animationId = requestAnimationFrame(updateAudioData);
     return () => cancelAnimationFrame(animationId);
-  }, [audioEnabled, analyser, audioIntensity, audioSensitivity, audioControlMode, useTex]);
+  }, [audioEnabled, analyser, audioIntensity, audioSensitivity, audioControlMode, useTex, userOverride]);
 
   // Load saved presets on component mount
   useEffect(() => {
