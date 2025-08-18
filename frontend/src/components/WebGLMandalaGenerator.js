@@ -1421,7 +1421,7 @@ export default function WebGLMandalaGenerator() {
                         <Input 
                           type="color" 
                           value={col3} 
-                          onChange={(e) => manualSetCol3(e.target.value)}
+                          onChange={(e) => setCol3(e.target.value)}
                           className="h-10 p-1 border-0 bg-zinc-700 rounded-lg"
                         />
                       </div>
