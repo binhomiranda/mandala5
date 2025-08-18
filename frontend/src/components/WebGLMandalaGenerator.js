@@ -618,6 +618,17 @@ export default function WebGLMandalaGenerator() {
     drawTextOverlay();
   }, [textEnabled, textValue, textSize, textX, textY, textAlign, textColor, textBold]);
 
+  // Clear user overrides when audio is disabled
+  useEffect(() => {
+    if (!audioEnabled) {
+      setUserOverride({});
+      Object.keys(overrideTimerRef.current).forEach(key => {
+        clearTimeout(overrideTimerRef.current[key]);
+      });
+      overrideTimerRef.current = {};
+    }
+  }, [audioEnabled]);
+
   // User override system - prevents audio from overriding manual changes
   const createManualSetter = useCallback((originalSetter, paramName) => {
     return (value) => {
