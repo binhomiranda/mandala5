@@ -863,6 +863,32 @@ export default function WebGLMandalaGenerator() {
     setRecordingTime(0);
   };
 
+  const discardRecordedAudio = () => {
+    // Stop current audio if playing
+    if (audioEnabled) {
+      setAudioEnabled(false);
+    }
+    if (audioElement) {
+      audioElement.pause();
+      audioElement.src = '';
+    }
+    
+    // Clear recorded audio and related states
+    setRecordedAudio(null);
+    setAudioFile(null);
+    setAudioContext(null);
+    setAnalyser(null);
+    setAudioSource(null);
+    setAudioElement(null);
+    
+    // Clear user overrides
+    setUserOverride({});
+    Object.keys(overrideTimerRef.current).forEach(key => {
+      clearTimeout(overrideTimerRef.current[key]);
+    });
+    overrideTimerRef.current = {};
+  };
+
   // Preset management functions
   const savePreset = () => {
     if (!newPresetName.trim()) return;
