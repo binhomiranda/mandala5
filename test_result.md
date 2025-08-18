@@ -228,13 +228,13 @@ metadata:
 
 test_plan:
   current_focus:
-    - "WebGL Mandala Generator Core Implementation"
-    - "Modern UI Interface Design"
-    - "WebGL Shader System"
-    - "Real-time Parameter Controls"
     - "Text Overlay System"
     - "Export Functionality"
-  stuck_tasks: []
+    - "WebGL Mandala Generator Core Implementation"
+    - "Real-time Parameter Controls"
+  stuck_tasks:
+    - "Text Overlay System"
+    - "Export Functionality"
   test_all: true
   test_priority: "high_first"
 
