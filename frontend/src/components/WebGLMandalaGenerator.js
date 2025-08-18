@@ -1130,6 +1130,68 @@ export default function WebGLMandalaGenerator() {
         </div>
       </header>
 
+      {/* Persistent Audio Control Bar - Only visible when audio is loaded */}
+      {(audioFile || recordedAudio) && (
+        <div className="sticky top-[80px] z-40 bg-zinc-900/95 backdrop-blur border-b border-zinc-700">
+          <div className="max-w-7xl mx-auto px-6 py-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                  <Music className="w-4 h-4 text-black" />
+                </div>
+                <div className="flex flex-col">
+                  <div className="text-sm font-medium text-white">
+                    {recordedAudio ? "Recorded Audio" : audioFile?.name || "Audio Track"}
+                  </div>
+                  <div className="text-xs text-zinc-400">
+                    Mode: {audioControlMode === 'geometry' ? 'Geometry' : 
+                           audioControlMode === 'kaleidoscope' ? 'Kaleidoscope' : 'Both'}
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-3">
+                <Button
+                  size="sm"
+                  onClick={toggleAudio}
+                  className={audioEnabled 
+                    ? "bg-green-500 text-black hover:bg-green-600" 
+                    : "bg-zinc-700 hover:bg-zinc-600 text-zinc-300"}
+                >
+                  {audioEnabled ? (
+                    <>
+                      <Pause className="w-3 h-3 mr-2" />
+                      Playing
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-3 h-3 mr-2" />
+                      Play
+                    </>
+                  )}
+                </Button>
+                
+                {recordedAudio && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={discardRecordedAudio}
+                    className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
+                  >
+                    <Trash2 className="w-3 h-3 mr-2" />
+                    Discard
+                  </Button>
+                )}
+                
+                <div className="text-xs text-zinc-500">
+                  {audioEnabled && "🔊 Active"}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Main Content with Right Sidebar */}
       <div className="max-w-7xl mx-auto px-6 py-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Preview Canvas - Takes 2 columns on large screens */}
