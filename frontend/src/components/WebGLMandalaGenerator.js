@@ -619,18 +619,20 @@ export default function WebGLMandalaGenerator() {
   }, [textEnabled, textValue, textSize, textX, textY, textAlign, textColor, textBold]);
 
   // User override system - prevents audio from overriding manual changes
-  const createManualSetter = (originalSetter, paramName) => {
+  const createManualSetter = useCallback((originalSetter, paramName) => {
     return (value) => {
-      // Set user override flag
-      setUserOverride(prev => ({ ...prev, [paramName]: true }));
-      
-      // Clear override after 3 seconds
-      if (overrideTimerRef.current[paramName]) {
-        clearTimeout(overrideTimerRef.current[paramName]);
+      // Only create override if audio is actually enabled
+      if (audioEnabled) {
+        setUserOverride(prev => ({ ...prev, [paramName]: true }));
+        
+        // Clear override after 3 seconds
+        if (overrideTimerRef.current[paramName]) {
+          clearTimeout(overrideTimerRef.current[paramName]);
+        }
+        overrideTimerRef.current[paramName] = setTimeout(() => {
+          setUserOverride(prev => ({ ...prev, [paramName]: false }));
+        }, 3000);
       }
-      overrideTimerRef.current[paramName] = setTimeout(() => {
-        setUserOverride(prev => ({ ...prev, [paramName]: false }));
-      }, 3000);
       
       // Call original setter
       if (Array.isArray(value)) {
@@ -639,17 +641,22 @@ export default function WebGLMandalaGenerator() {
         originalSetter(value);
       }
     };
-  };
+  }, [audioEnabled]);
 
-  // Manual setters that override audio control
-  const manualSetGlow = createManualSetter(setGlow, 'glow');
-  const manualSetSpeed = createManualSetter(setSpeed, 'speed');
-  const manualSetScale = createManualSetter(setScale, 'scale');
-  const manualSetTexScale = createManualSetter(setTexScale, 'texScale');
-  const manualSetTexRot = createManualSetter(setTexRot, 'texRot');
-  const manualSetTexMix = createManualSetter(setTexMix, 'texMix');
-  const manualSetTexCX = createManualSetter(setTexCX, 'texCX');
-  const manualSetTexCY = createManualSetter(setTexCY, 'texCY');
+  // Manual setters that override audio control - using useMemo to prevent recreation
+  const manualSetGlow = useMemo(() => createManualSetter(setGlow, 'glow'), [createManualSetter]);
+  const manualSetSpeed = useMemo(() => createManualSetter(setSpeed, 'speed'), [createManualSetter]);
+  const manualSetScale = useMemo(() => createManualSetter(setScale, 'scale'), [createManualSetter]);
+  const manualSetTexScale = useMemo(() => createManualSetter(setTexScale, 'texScale'), [createManualSetter]);
+  const manualSetTexRot = useMemo(() => createManualSetter(setTexRot, 'texRot'), [createManualSetter]);
+  const manualSetTexMix = useMemo(() => createManualSetter(setTexMix, 'texMix'), [createManualSetter]);
+  const manualSetTexCX = useMemo(() => createManualSetter(setTexCX, 'texCX'), [createManualSetter]);
+  const manualSetTexCY = useMemo(() => createManualSetter(setTexCY, 'texCY'), [createManualSetter]);
+  
+  // Manual setters for color controls - ALWAYS MANUAL when audio is active
+  const manualSetCol1 = useMemo(() => createManualSetter(setCol1, 'col1'), [createManualSetter]);
+  const manualSetCol2 = useMemo(() => createManualSetter(setCol2, 'col2'), [createManualSetter]);
+  const manualSetCol3 = useMemo(() => createManualSetter(setCol3, 'col3'), [createManualSetter]);
 
   // Audio processing functions
   const handleAudioUpload = async (event) => {
