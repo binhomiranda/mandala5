@@ -1226,13 +1226,13 @@ export default function WebGLMandalaGenerator() {
                   <h3 className="text-lg font-semibold text-white mb-4">Text Overlay</h3>
                   
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between p-4 bg-zinc-800 rounded-lg">
                       <label className="text-sm font-medium text-zinc-300">Enable Text</label>
                       <Button
                         size="sm"
                         variant={textEnabled ? "default" : "outline"}
                         onClick={() => setTextEnabled(!textEnabled)}
-                        className={textEnabled ? "bg-green-500 text-black hover:bg-green-600" : "bg-zinc-800 hover:bg-zinc-700 border-zinc-700"}
+                        className={textEnabled ? "bg-green-500 text-black hover:bg-green-600" : "bg-zinc-700 hover:bg-zinc-600 border-zinc-600"}
                       >
                         {textEnabled ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
                       </Button>
@@ -1240,21 +1240,21 @@ export default function WebGLMandalaGenerator() {
 
                     {textEnabled && (
                       <div className="space-y-4">
-                        <div>
+                        <div className="p-4 bg-zinc-800 rounded-lg">
                           <label className="text-sm font-medium text-zinc-300 block mb-2">Content</label>
                           <textarea
                             value={textValue}
                             onChange={(e) => setTextValue(e.target.value)}
-                            className="w-full p-3 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100 resize-none"
+                            className="w-full p-3 bg-zinc-700 border border-zinc-600 rounded-lg text-zinc-100 resize-none"
                             rows={3}
                             placeholder="Enter your text..."
                           />
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="p-4 bg-zinc-800 rounded-lg">
                             <label className="text-sm font-medium text-zinc-300 block mb-2">Size</label>
-                            <div className="text-xs text-zinc-500 mb-2">{textSize}px</div>
+                            <div className="text-xs text-zinc-400 mb-2">{textSize}px</div>
                             <Slider 
                               min={12} max={128} step={1} 
                               value={[textSize]} 
@@ -1262,21 +1262,21 @@ export default function WebGLMandalaGenerator() {
                               className="w-full"
                             />
                           </div>
-                          <div>
+                          <div className="p-4 bg-zinc-800 rounded-lg">
                             <label className="text-sm font-medium text-zinc-300 block mb-2">Color</label>
                             <Input 
                               type="color" 
                               value={textColor} 
                               onChange={(e) => setTextColor(e.target.value)}
-                              className="h-10 p-1 border-0 bg-zinc-800 rounded-lg"
+                              className="h-10 p-1 border-0 bg-zinc-700 rounded-lg"
                             />
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="p-4 bg-zinc-800 rounded-lg">
                             <label className="text-sm font-medium text-zinc-300 block mb-2">Position X</label>
-                            <div className="text-xs text-zinc-500 mb-2">{textX}%</div>
+                            <div className="text-xs text-zinc-400 mb-2">{textX}%</div>
                             <Slider 
                               min={0} max={100} step={1} 
                               value={[textX]} 
@@ -1284,9 +1284,9 @@ export default function WebGLMandalaGenerator() {
                               className="w-full"
                             />
                           </div>
-                          <div>
+                          <div className="p-4 bg-zinc-800 rounded-lg">
                             <label className="text-sm font-medium text-zinc-300 block mb-2">Position Y</label>
-                            <div className="text-xs text-zinc-500 mb-2">{textY}%</div>
+                            <div className="text-xs text-zinc-400 mb-2">{textY}%</div>
                             <Slider 
                               min={0} max={100} step={1} 
                               value={[textY]} 
@@ -1294,6 +1294,41 @@ export default function WebGLMandalaGenerator() {
                               className="w-full"
                             />
                           </div>
+                        </div>
+
+                        <div className="p-4 bg-zinc-800 rounded-lg">
+                          <label className="text-sm font-medium text-zinc-300 block mb-2">Background Dimmer</label>
+                          <div className="text-xs text-zinc-400 mb-2">Darken background behind text: {Math.round(bgDim * 100)}%</div>
+                          <Slider 
+                            min={0} max={0.8} step={0.01} 
+                            value={[bgDim]} 
+                            onValueChange={([v]) => setBgDim(v)}
+                            className="w-full"
+                          />
+                        </div>
+
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setTextX(50);
+                              setTextY(50);
+                              setBgDim(0);
+                            }}
+                            className="flex-1 bg-zinc-700 hover:bg-zinc-600 border-zinc-600 text-zinc-300"
+                          >
+                            <RotateCcw className="w-3 h-3 mr-2" />
+                            Reset Position
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setTextBold(!textBold)}
+                            className={`flex-1 ${textBold ? 'bg-green-500 text-black hover:bg-green-600' : 'bg-zinc-700 hover:bg-zinc-600 border-zinc-600 text-zinc-300'}`}
+                          >
+                            {textBold ? 'Bold ON' : 'Bold OFF'}
+                          </Button>
                         </div>
                       </div>
                     )}
