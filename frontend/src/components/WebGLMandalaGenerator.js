@@ -587,6 +587,11 @@ export default function WebGLMandalaGenerator() {
     ctx.restore();
   };
 
+  // Effect to update text overlay when text properties change
+  useEffect(() => {
+    drawTextOverlay();
+  }, [textEnabled, textValue, textSize, textX, textY, textAlign, textColor, textBold]);
+
   // Export functionality
   const savePNG = () => {
     const r = rendererRef.current;
