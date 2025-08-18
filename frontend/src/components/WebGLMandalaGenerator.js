@@ -1437,7 +1437,7 @@ export default function WebGLMandalaGenerator() {
                             <Slider 
                               min={0.1} max={5} step={0.01} 
                               value={[texScale]} 
-                              onValueChange={([v]) => setTexScale(v)}
+                              onValueChange={manualSetTexScale}
                               className="w-full"
                             />
                           </div>
