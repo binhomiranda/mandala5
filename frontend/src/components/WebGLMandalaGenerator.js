@@ -1824,10 +1824,30 @@ export default function WebGLMandalaGenerator() {
                         <div className="p-3 bg-zinc-700 rounded-lg">
                           <p className="text-xs text-zinc-400">
                             <strong className="text-white">How it works:</strong><br/>
-                            • Bass frequencies control glow intensity<br/>
-                            • Mid frequencies affect animation speed<br/>
-                            • Treble frequencies modify scale<br/>
-                            • High intensity triggers color changes
+                            {audioControlMode === 'geometry' && (
+                              <>
+                                • Bass frequencies → Glow intensity<br/>
+                                • Mid frequencies → Animation speed<br/>
+                                • Treble frequencies → Scale<br/>
+                                • High intensity → Color changes & effects
+                              </>
+                            )}
+                            {audioControlMode === 'kaleidoscope' && (
+                              <>
+                                • Bass frequencies → Image scale<br/>
+                                • Mid frequencies → Image rotation<br/>
+                                • Treble frequencies → Mix intensity<br/>
+                                • Combined → Position movement & HSL shifts
+                              </>
+                            )}
+                            {audioControlMode === 'both' && (
+                              <>
+                                • Bass → Glow intensity + Image scale<br/>
+                                • Mid → Animation speed + Image rotation<br/>
+                                • Treble → Mandala scale + Mix intensity<br/>
+                                • High intensity → Colors + Position + HSL
+                              </>
+                            )}
                           </p>
                         </div>
                       </div>
