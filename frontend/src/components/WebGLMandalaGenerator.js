@@ -241,7 +241,7 @@ export default function WebGLMandalaGenerator() {
   const textCanvasRef = useRef(null);
   const [textEnabled, setTextEnabled] = useState(false);
   const [textValue, setTextValue] = useState("Mandala Art");
-  const [textSize, setTextSize] = useState(48);
+  const [textSize, setTextSize] = useState(72);
   const [textX, setTextX] = useState(50);
   const [textY, setTextY] = useState(50);
   const [textAlign, setTextAlign] = useState('center');
