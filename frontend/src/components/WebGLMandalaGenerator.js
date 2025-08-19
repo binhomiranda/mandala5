@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { Button } from "./ui/button";
 import { Slider } from "./ui/slider";
 import { Input } from "./ui/input";
-import { Sparkles, Download, RefreshCw, Pause, Play, RotateCcw, Upload, Eye, EyeOff, Palette, Settings, Zap, Star, Trash2, Plus, Check, X } from "lucide-react";
+import { Sparkles, Download, RefreshCw, Pause, Play, RotateCcw, Upload, Eye, EyeOff, Palette, Settings, Zap, Star, Trash2, Plus, Check, X, Code } from "lucide-react";
 
 // Fragment shader with kaleidoscope + HSL for image, stars, effects
 const frag = `
