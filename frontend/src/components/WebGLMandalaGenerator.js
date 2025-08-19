@@ -792,10 +792,12 @@ export default function WebGLMandalaGenerator() {
     loader.load(
       url,
       (texture) => {
+        // High quality texture settings to prevent pixelation
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
-        texture.minFilter = THREE.LinearFilter;
+        texture.minFilter = THREE.LinearMipmapLinearFilter;
         texture.magFilter = THREE.LinearFilter;
+        texture.generateMipmaps = true;
         texture.colorSpace = THREE.SRGBColorSpace;
         texture.needsUpdate = true;
         
