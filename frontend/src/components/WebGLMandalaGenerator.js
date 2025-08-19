@@ -693,7 +693,7 @@ export default function WebGLMandalaGenerator() {
       starsOn, starDensity, starIntensity,
       effectType, effectAmp, effectFreq,
       textEnabled, textValue, textSize, textX, textY,
-      textAlign, textColor, textBold, bgDim,
+      textAlign, textColor, textBold, textItalic, textLineHeight, bgDim,
       useTex, texMix, texScale, texRot, texCX, texCY, texMirror,
       imgHueDeg, imgSat, imgLight,
       aspect, size
