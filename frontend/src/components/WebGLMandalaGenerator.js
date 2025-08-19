@@ -666,7 +666,7 @@ export default function WebGLMandalaGenerator() {
   // Effect to update text overlay when text properties change
   useEffect(() => {
     drawTextOverlay();
-  }, [textEnabled, textValue, textSize, textX, textY, textAlign, textColor, textBold]);
+  }, [textEnabled, textValue, textSize, textX, textY, textAlign, textColor, textBold, textItalic, textLineHeight]);
 
   // Load saved presets on component mount
   useEffect(() => {
