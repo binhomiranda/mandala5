@@ -727,7 +727,8 @@ export default function WebGLMandalaGenerator() {
       setTextEnabled(data.textEnabled || false); setTextValue(data.textValue || "Mandala Art");
       setTextSize(data.textSize || 48); setTextX(data.textX || 50); setTextY(data.textY || 50);
       setTextAlign(data.textAlign || 'center'); setTextColor(data.textColor || "#ffffff");
-      setTextBold(data.textBold || false); setBgDim(data.bgDim || 0);
+      setTextBold(data.textBold || false); setTextItalic(data.textItalic || false); 
+      setTextLineHeight(data.textLineHeight || 1.2); setBgDim(data.bgDim || 0);
       setUseTex(data.useTex || false); setTexMix(data.texMix || 1.0); setTexScale(data.texScale || 1.0);
       setTexRot(data.texRot || 0); setTexCX(data.texCX || 0); setTexCY(data.texCY || 0);
       setTexMirror(data.texMirror || false); setImgHueDeg(data.imgHueDeg || 0);
