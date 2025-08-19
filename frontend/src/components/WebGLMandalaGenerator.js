@@ -1677,6 +1677,76 @@ export default function WebGLMandalaGenerator() {
 
             </div>
 
+            {/* DEV Panel - Diagnostic Information */}
+            {showDevPanel && (
+              <div className="border-t border-zinc-800 pt-4 mt-4">
+                <div className="space-y-4">
+                  <h3 className="text-sm font-semibold text-orange-400 mb-4">🔧 DEV Diagnostics</h3>
+                  
+                  <div className="space-y-3 text-xs">
+                    {/* Screen & Resolution Info */}
+                    <div className="p-3 bg-zinc-800 rounded-lg">
+                      <div className="text-orange-300 font-medium mb-2">📱 Screen & Resolution</div>
+                      <div className="space-y-1 text-zinc-300">
+                        <div>Window: {devMetrics.windowWidth} × {devMetrics.windowHeight}</div>
+                        <div>DPR: {devMetrics.devicePixelRatio}</div>
+                        <div>Aspect: {devMetrics.aspectRatio}</div>
+                      </div>
+                    </div>
+
+                    {/* Canvas Info */}
+                    <div className="p-3 bg-zinc-800 rounded-lg">
+                      <div className="text-orange-300 font-medium mb-2">🎨 Canvas</div>
+                      <div className="space-y-1 text-zinc-300">
+                        <div>Canvas: {devMetrics.canvasWidth} × {devMetrics.canvasHeight}</div>
+                        <div>Client: {devMetrics.clientWidth} × {devMetrics.clientHeight}</div>
+                        <div>Renderer: {devMetrics.rendererSize.width} × {devMetrics.rendererSize.height}</div>
+                        <div>Uniforms: {devMetrics.uniformsResolution.x} × {devMetrics.uniformsResolution.y}</div>
+                      </div>
+                    </div>
+
+                    {/* Stage Info */}
+                    <div className="p-3 bg-zinc-800 rounded-lg">
+                      <div className="text-orange-300 font-medium mb-2">🎭 Stage</div>
+                      <div className="space-y-1 text-zinc-300">
+                        <div>Size: {Math.round(devMetrics.stageRect.width)} × {Math.round(devMetrics.stageRect.height)}</div>
+                        <div>Position: {Math.round(devMetrics.stageRect.x)}, {Math.round(devMetrics.stageRect.y)}</div>
+                        <div>Center: {Math.round(devMetrics.centerCalculated.x)}, {Math.round(devMetrics.centerCalculated.y)}</div>
+                      </div>
+                    </div>
+
+                    {/* Text Position Info */}
+                    {textEnabled && (
+                      <div className="p-3 bg-zinc-800 rounded-lg">
+                        <div className="text-orange-300 font-medium mb-2">📝 Text Position</div>
+                        <div className="space-y-1 text-zinc-300">
+                          <div>Settings: {devMetrics.textPosition.x}%, {devMetrics.textPosition.y}%</div>
+                          <div>Actual: {Math.round(devMetrics.textPosition.actualX)}px, {Math.round(devMetrics.textPosition.actualY)}px</div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Mandala Center Validation */}
+                    <div className="p-3 bg-zinc-800 rounded-lg">
+                      <div className="text-orange-300 font-medium mb-2">🎯 Center Validation</div>
+                      <div className="space-y-1 text-zinc-300">
+                        <div>Calculated Center: {Math.round(devMetrics.centerCalculated.x)}, {Math.round(devMetrics.centerCalculated.y)}</div>
+                        <div>Settings: X={centerX}, Y={centerY}</div>
+                        <div className={`font-medium ${Math.abs(centerX) < 0.1 && Math.abs(centerY) < 0.1 ? 'text-green-400' : 'text-yellow-400'}`}>
+                          Status: {Math.abs(centerX) < 0.1 && Math.abs(centerY) < 0.1 ? '✅ Centered' : '⚠️ Off-center'}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Last Update */}
+                    <div className="text-center text-zinc-500 text-xs">
+                      Last update: {devMetrics.lastUpdate}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Bottom Section - Presets and Export */}
             <div className="border-t border-zinc-800 pt-6 mt-6 space-y-6">
               {/* Preset Management */}
