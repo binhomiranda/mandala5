@@ -245,7 +245,7 @@ export default function WebGLMandalaGenerator() {
   const [textX, setTextX] = useState(50);
   const [textY, setTextY] = useState(50);
   const [textAlign, setTextAlign] = useState('center');
-  const [textColor, setTextColor] = useState("#ffffff");
+  const [textColor, setTextColor] = useState("#ffff00");
   const [textBold, setTextBold] = useState(false);
   const [textItalic, setTextItalic] = useState(false);
   const [textLineHeight, setTextLineHeight] = useState(1.2);
