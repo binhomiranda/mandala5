@@ -822,15 +822,35 @@ export default function WebGLMandalaGenerator() {
     const prevPaused = pausedRef.current;
     pausedRef.current = true;
     
+    // Store previous renderer state
     const prevSize = new THREE.Vector2();
     r.getSize(prevSize);
+    const prevCameraState = {
+      left: c.left,
+      right: c.right,
+      top: c.top,
+      bottom: c.bottom
+    };
     
     const [aw, ah] = aspect === '1:1' ? [1, 1] : (aspect === '16:9' ? [16, 9] : [9, 16]);
     const expW = Math.max(1, Math.round(size));
     const expH = Math.max(1, Math.round(expW * ah / aw));
 
+    // Update renderer size
     r.setSize(expW, expH, false);
+    
+    // Update uniforms with export dimensions
     u.u_res.value.set(expW, expH);
+    
+    // CRITICAL: Update camera projection to maintain coordinate system consistency
+    const exportAspectRatio = expW / expH;
+    c.left = -exportAspectRatio;
+    c.right = exportAspectRatio;
+    c.top = 1;
+    c.bottom = -1;
+    c.updateProjectionMatrix();
+    
+    // Render with consistent coordinate system
     r.render(s, c);
     
     drawTextOverlay();
@@ -865,8 +885,17 @@ export default function WebGLMandalaGenerator() {
       alert('Failed to export image');
     }
 
+    // Restore previous state
     r.setSize(prevSize.x, prevSize.y, false);
     u.u_res.value.set(prevSize.x, prevSize.y);
+    
+    // CRITICAL: Restore camera projection
+    c.left = prevCameraState.left;
+    c.right = prevCameraState.right;
+    c.top = prevCameraState.top;
+    c.bottom = prevCameraState.bottom;
+    c.updateProjectionMatrix();
+    
     r.render(s, c);
     pausedRef.current = prevPaused;
     drawTextOverlay();
