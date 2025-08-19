@@ -913,6 +913,19 @@ export default function WebGLMandalaGenerator() {
     c.bottom = prevCameraState.bottom;
     c.updateProjectionMatrix();
     
+    // CRITICAL: Restore text canvas dimensions
+    if (textCanvas) {
+      textCanvas.width = prevTextDimensions.width;
+      textCanvas.height = prevTextDimensions.height;
+      
+      // Restore DPR scaling
+      const ctx = textCanvas.getContext('2d');
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      if (ctx) {
+        ctx.scale(dpr, dpr);
+      }
+    }
+    
     r.render(s, c);
     pausedRef.current = prevPaused;
     drawTextOverlay();
