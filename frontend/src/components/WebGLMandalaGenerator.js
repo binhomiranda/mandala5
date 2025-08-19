@@ -247,6 +247,8 @@ export default function WebGLMandalaGenerator() {
   const [textAlign, setTextAlign] = useState('center');
   const [textColor, setTextColor] = useState("#ffffff");
   const [textBold, setTextBold] = useState(false);
+  const [textItalic, setTextItalic] = useState(false);
+  const [textLineHeight, setTextLineHeight] = useState(1.2);
   const [bgDim, setBgDim] = useState(0);
 
   // Stars
