@@ -566,14 +566,7 @@ export default function WebGLMandalaGenerator() {
       let displayHeight = logicalHeight;
       
       // Special handling for different aspect ratios
-      if (aspect === '16:9') {
-        // For 16:9 format, ensure proper proportions and reasonable size
-        const maxDisplayWidth = Math.min(logicalWidth, 800); // Limit width for better display
-        if (displayWidth > maxDisplayWidth) {
-          displayWidth = maxDisplayWidth;
-          displayHeight = Math.round(displayWidth * ah / aw);
-        }
-      } else if (aspect === '9:16') {
+      if (aspect === '9:16') {
         const maxDisplayHeight = 700;
         if (displayHeight > maxDisplayHeight) {
           displayHeight = maxDisplayHeight;
@@ -581,6 +574,7 @@ export default function WebGLMandalaGenerator() {
           // Keep render resolution high for quality
         }
       }
+      // 16:9 format should use full available width - no limitations
 
       const r = rendererRef.current;
       const u = uniformsRef.current;
