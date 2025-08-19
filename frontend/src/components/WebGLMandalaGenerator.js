@@ -938,7 +938,7 @@ export default function WebGLMandalaGenerator() {
                       <span>Dim BG</span>
                     </div>
                   )}
-                  {(!audioEnabled && !textEnabled && !starsOn && !useTex && effectType === 0 && bgDim === 0) && (
+                  {(!textEnabled && !starsOn && !useTex && effectType === 0 && bgDim === 0) && (
                     <div className="text-white/60">None</div>
                   )}
                 </div>
