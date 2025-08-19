@@ -1265,7 +1265,7 @@ export default function WebGLMandalaGenerator() {
                             <Slider 
                               min={-1} max={1} step={0.01} 
                               value={[texCY]} 
-                              onValueChange={manualSetTexCY}
+                              onValueChange={([v]) => setTexCY(v)}
                               className="w-full"
                             />
                           </div>
