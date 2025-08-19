@@ -280,6 +280,25 @@ export default function WebGLMandalaGenerator() {
   const [newPresetName, setNewPresetName] = useState("");
   const [showPresetInput, setShowPresetInput] = useState(false);
 
+  // DEV Panel for diagnostics
+  const [showDevPanel, setShowDevPanel] = useState(false);
+  const [devMetrics, setDevMetrics] = useState({
+    canvasWidth: 0,
+    canvasHeight: 0,
+    clientWidth: 0,
+    clientHeight: 0,
+    devicePixelRatio: 0,
+    windowWidth: 0,
+    windowHeight: 0,
+    aspectRatio: '',
+    centerCalculated: { x: 0, y: 0 },
+    textPosition: { x: 0, y: 0, actualX: 0, actualY: 0 },
+    rendererSize: { width: 0, height: 0 },
+    stageRect: { width: 0, height: 0, x: 0, y: 0 },
+    uniformsResolution: { x: 0, y: 0 },
+    lastUpdate: null
+  });
+
   // Color vectors
   const col1Vec = useMemo(() => new THREE.Color(col1), [col1]);
   const col2Vec = useMemo(() => new THREE.Color(col2), [col2]);
