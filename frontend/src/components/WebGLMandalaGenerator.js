@@ -534,9 +534,9 @@ export default function WebGLMandalaGenerator() {
       let w = Math.max(1, Math.round(rect.width));
       let h = Math.max(1, Math.round(w * ah / aw));
       
-      // For 9:16 format, limit height to fit viewport better - only half the current size
+      // For 9:16 format, aggressively limit height to be much smaller
       if (aspect === '9:16') {
-        const maxHeight = Math.min(400, window.innerHeight * 0.35); // Max 35% of viewport or 400px (half of previous)
+        const maxHeight = 300; // Fixed small height for 9:16
         if (h > maxHeight) {
           h = maxHeight;
           w = Math.round(h * aw / ah);
