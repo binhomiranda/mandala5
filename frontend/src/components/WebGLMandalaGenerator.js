@@ -273,27 +273,6 @@ export default function WebGLMandalaGenerator() {
   const [imgSat, setImgSat] = useState(1.0);
   const [imgLight, setImgLight] = useState(0.0);
 
-  // Audio analysis
-  const [audioEnabled, setAudioEnabled] = useState(false);
-  const [audioFile, setAudioFile] = useState(null);
-  const [audioContext, setAudioContext] = useState(null);
-  const [analyser, setAnalyser] = useState(null);
-  const [audioSource, setAudioSource] = useState(null);
-  const [audioElement, setAudioElement] = useState(null);
-  const [audioIntensity, setAudioIntensity] = useState(1.0);
-  const [audioSensitivity, setAudioSensitivity] = useState(0.5);
-  const [audioControlMode, setAudioControlMode] = useState('geometry'); // 'geometry', 'kaleidoscope', 'both'
-  const [userOverride, setUserOverride] = useState({}); // Track manual user changes
-  const audioDataRef = useRef(new Uint8Array(256));
-  const overrideTimerRef = useRef({});
-
-  // Audio recording
-  const [isRecording, setIsRecording] = useState(false);
-  const [recordedAudio, setRecordedAudio] = useState(null);
-  const [mediaRecorder, setMediaRecorder] = useState(null);
-  const [recordingTime, setRecordingTime] = useState(0);
-  const [audioStream, setAudioStream] = useState(null);
-
   // Presets management
   const [savedPresets, setSavedPresets] = useState([]);
   const [newPresetName, setNewPresetName] = useState("");
