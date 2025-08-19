@@ -663,30 +663,27 @@ export default function WebGLMandalaGenerator() {
 
     ctx.save();
     
-    // Get device pixel ratio for proper scaling
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    // FIXED: Always use canvas dimensions directly for positioning
+    const canvasWidth = cvs.width;
+    const canvasHeight = cvs.height;
     
-    // Calculate logical canvas dimensions (what user sees)
-    const logicalWidth = cvs.width / dpr;
-    const logicalHeight = cvs.height / dpr;
+    // Calculate text position using canvas dimensions (not logical)
+    const x = (textX / 100) * canvasWidth;
+    const y = (textY / 100) * canvasHeight;
     
-    // Calculate text position using logical dimensions
-    const x = (textX / 100) * logicalWidth;
-    const y = (textY / 100) * logicalHeight;
-    
-    // Set text properties with DPR-scaled font size
+    // Set text properties
     ctx.textAlign = textAlign;
     ctx.textBaseline = 'top';
     ctx.fillStyle = textColor;
     
-    // Use Rosario font with proper styling and DPR-scaled size
+    // Use Rosario font with proper styling - scale font based on canvas width
     const fontWeight = textBold ? '700' : '400';
     const fontStyle = textItalic ? 'italic' : 'normal';
-    const scaledFontSize = textSize; // Font size already scaled by ctx.scale() in resize handler
+    const scaledFontSize = textSize * (canvasWidth / 1024); // Scale font to canvas size
     ctx.font = `${fontStyle} ${fontWeight} ${scaledFontSize}px 'Rosario', system-ui, -apple-system, sans-serif`;
     
-    // Auto word wrap implementation using logical dimensions
-    const maxWidth = logicalWidth * 0.9; // Use 90% of logical canvas width
+    // Auto word wrap implementation using canvas dimensions
+    const maxWidth = canvasWidth * 0.9; // Use 90% of canvas width
     const lineHeight = scaledFontSize * textLineHeight;
     
     // Split text into paragraphs first
