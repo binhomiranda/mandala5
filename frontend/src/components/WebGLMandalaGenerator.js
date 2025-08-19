@@ -1472,6 +1472,25 @@ export default function WebGLMandalaGenerator() {
                           </div>
                         </div>
 
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setTextBold(!textBold)}
+                            className={`flex-1 ${textBold ? 'bg-green-500 text-black hover:bg-green-600' : 'bg-zinc-700 hover:bg-zinc-600 border-zinc-600 text-zinc-300'}`}
+                          >
+                            {textBold ? 'Bold ON' : 'Bold OFF'}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setTextItalic(!textItalic)}
+                            className={`flex-1 ${textItalic ? 'bg-green-500 text-black hover:bg-green-600' : 'bg-zinc-700 hover:bg-zinc-600 border-zinc-600 text-zinc-300'}`}
+                          >
+                            {textItalic ? 'Italic ON' : 'Italic OFF'}
+                          </Button>
+                        </div>
+
                         <div className="grid grid-cols-2 gap-3">
                           <div className="p-4 bg-zinc-800 rounded-lg">
                             <label className="text-sm font-medium text-zinc-300 block mb-2">Position X</label>
