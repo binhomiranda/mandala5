@@ -637,7 +637,7 @@ export default function WebGLMandalaGenerator() {
     return () => ro.disconnect();
   }, [aspect, showDevPanel]);
 
-  // Text overlay drawing with auto word wrap and Rosario font
+  // Text overlay drawing with auto word wrap, proper DPR scaling, and Rosario font
   const drawTextOverlay = () => {
     const cvs = textCanvasRef.current;
     if (!cvs) return;
@@ -645,26 +645,38 @@ export default function WebGLMandalaGenerator() {
     const ctx = cvs.getContext('2d');
     if (!ctx) return;
 
+    // Clear the entire canvas
     ctx.clearRect(0, 0, cvs.width, cvs.height);
     
     if (!textEnabled || !textValue.trim()) return;
 
     ctx.save();
+    
+    // Get device pixel ratio for proper scaling
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    
+    // Calculate logical canvas dimensions (what user sees)
+    const logicalWidth = cvs.width / dpr;
+    const logicalHeight = cvs.height / dpr;
+    
+    // Calculate text position using logical dimensions
+    const x = (textX / 100) * logicalWidth;
+    const y = (textY / 100) * logicalHeight;
+    
+    // Set text properties with DPR-scaled font size
     ctx.textAlign = textAlign;
     ctx.textBaseline = 'top';
     ctx.fillStyle = textColor;
     
-    // Use Rosario font with proper styling
+    // Use Rosario font with proper styling and DPR-scaled size
     const fontWeight = textBold ? '700' : '400';
     const fontStyle = textItalic ? 'italic' : 'normal';
-    ctx.font = `${fontStyle} ${fontWeight} ${textSize}px 'Rosario', system-ui, -apple-system, sans-serif`;
+    const scaledFontSize = textSize; // Font size already scaled by ctx.scale() in resize handler
+    ctx.font = `${fontStyle} ${fontWeight} ${scaledFontSize}px 'Rosario', system-ui, -apple-system, sans-serif`;
     
-    const x = (textX / 100) * cvs.width;
-    const y = (textY / 100) * cvs.height;
-    
-    // Auto word wrap implementation
-    const maxWidth = cvs.width * 0.9; // Use 90% of canvas width
-    const lineHeight = textSize * textLineHeight;
+    // Auto word wrap implementation using logical dimensions
+    const maxWidth = logicalWidth * 0.9; // Use 90% of logical canvas width
+    const lineHeight = scaledFontSize * textLineHeight;
     
     // Split text into paragraphs first
     const paragraphs = textValue.split('\n');
@@ -696,7 +708,7 @@ export default function WebGLMandalaGenerator() {
       }
     });
     
-    // Calculate total text height for centering
+    // Calculate total text height for proper alignment
     const totalHeight = wrappedLines.length * lineHeight;
     let startY = y;
     
@@ -707,7 +719,7 @@ export default function WebGLMandalaGenerator() {
       startY = y - totalHeight;
     }
     
-    // Draw all lines
+    // Draw all lines with proper positioning
     wrappedLines.forEach((line, index) => {
       const lineY = startY + (index * lineHeight);
       ctx.fillText(line, x, lineY);
