@@ -100,9 +100,8 @@ vec3 hsl2rgb(vec3 hsl){
 }
 
 void main(){
-  // Use the smaller dimension to maintain aspect ratio, or max for full coverage
-  float normFactor = max(u_res.x, u_res.y); // Use max for full 16:9 coverage
-  vec2 uv = (gl_FragCoord.xy - 0.5*u_res.xy) / normFactor;
+  // Normalize coordinates to fill entire aspect ratio
+  vec2 uv = (gl_FragCoord.xy - 0.5*u_res.xy) / (0.5*u_res.xy);
   uv -= u_center;
 
   float t = u_time * u_speed;
