@@ -889,85 +889,41 @@ export default function WebGLMandalaGenerator() {
     // Copy WebGL render to export canvas
     ctx.drawImage(tempCanvas, 0, 0);
     
-    // Add text overlay if enabled
+    // Add text overlay if enabled - USE SAME FUNCTION AS PREVIEW
     if (textEnabled && textCanvasRef.current) {
-      // Create temporary text canvas at export resolution
-      const tempTextCanvas = document.createElement('canvas');
-      tempTextCanvas.width = expW;
-      tempTextCanvas.height = expH;
+      // Temporarily resize text canvas to export dimensions
+      const textCanvas = textCanvasRef.current;
+      const originalWidth = textCanvas.width;
+      const originalHeight = textCanvas.height;
       
-      const tempTextCtx = tempTextCanvas.getContext('2d');
-      if (tempTextCtx) {
-        // Use SAME logic as drawTextOverlay() but scaled for export
-        tempTextCtx.save();
-        tempTextCtx.textAlign = textAlign;
-        tempTextCtx.textBaseline = 'top';
-        tempTextCtx.fillStyle = textColor;
-        
-        const fontWeight = textBold ? '700' : '400';
-        const fontStyle = textItalic ? 'italic' : 'normal';
-        const exportFontSize = textSize * (expW / 1024); // Scale font for export
-        tempTextCtx.font = `${fontStyle} ${fontWeight} ${exportFontSize}px 'Rosario', system-ui, -apple-system, sans-serif`;
-        
-        const x = (textX / 100) * expW;
-        const y = (textY / 100) * expH;
-        
-        // SAME word wrap logic as preview
-        const maxWidth = expW * 0.9; // Use 90% of export canvas width
-        const lineHeight = exportFontSize * textLineHeight;
-        
-        // Split text into paragraphs first (same as preview)
-        const paragraphs = textValue.split('\n');
-        const wrappedLines = [];
-        
-        paragraphs.forEach((paragraph) => {
-          if (paragraph.trim() === '') {
-            wrappedLines.push(''); // Empty line for paragraph break
-            return;
-          }
-          
-          const words = paragraph.split(' ');
-          let currentLine = '';
-          
-          words.forEach((word) => {
-            const testLine = currentLine ? currentLine + ' ' + word : word;
-            const testWidth = tempTextCtx.measureText(testLine).width;
-            
-            if (testWidth > maxWidth && currentLine !== '') {
-              wrappedLines.push(currentLine);
-              currentLine = word;
-            } else {
-              currentLine = testLine;
-            }
-          });
-          
-          if (currentLine) {
-            wrappedLines.push(currentLine);
-          }
-        });
-        
-        // Calculate total text height for proper alignment (same as preview)
-        const totalHeight = wrappedLines.length * lineHeight;
-        let startY = y;
-        
-        // Adjust vertical alignment based on textAlign (same as preview)
-        if (textAlign === 'center') {
-          startY = y - totalHeight / 2;
-        } else if (textAlign === 'end' || textAlign === 'right') {
-          startY = y - totalHeight;
-        }
-        
-        // Draw all lines with proper positioning (same as preview)
-        wrappedLines.forEach((line, index) => {
-          const lineY = startY + (index * lineHeight);
-          tempTextCtx.fillText(line, x, lineY);
-        });
-        
-        tempTextCtx.restore();
-        
-        // Composite text over mandala
-        ctx.drawImage(tempTextCanvas, 0, 0);
+      // Resize text canvas to export size
+      textCanvas.width = expW;
+      textCanvas.height = expH;
+      
+      // Clear context scaling and reset for export
+      const textCtx = textCanvas.getContext('2d');
+      if (textCtx) {
+        textCtx.setTransform(1, 0, 0, 1, 0, 0); // Reset transform
       }
+      
+      // Call the SAME drawTextOverlay function used in preview
+      drawTextOverlay();
+      
+      // Composite text canvas over mandala
+      ctx.drawImage(textCanvas, 0, 0);
+      
+      // Restore original text canvas dimensions
+      textCanvas.width = originalWidth;
+      textCanvas.height = originalHeight;
+      
+      // Restore DPR scaling for preview
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      if (textCtx) {
+        textCtx.scale(dpr, dpr);
+      }
+      
+      // Redraw text overlay for preview
+      drawTextOverlay();
     }
 
     try {
