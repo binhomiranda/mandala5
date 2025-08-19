@@ -1977,9 +1977,8 @@ export default function WebGLMandalaGenerator() {
                               <>
                                 • Bass frequencies → Image scale<br/>
                                 • Mid frequencies → Image rotation<br/>
-                                • Treble frequencies → Mix intensity<br/>
                                 • Combined → Position movement & HSL shifts<br/>
-                                <span className="text-green-400">✓ Colors always remain under your full control</span><br/>
+                                <span className="text-green-400">✓ Image Mix always remains under your full control</span><br/>
                                 <span className="text-yellow-400">💡 Manual adjustments pause audio control for 3 seconds</span>
                               </>
                             )}
@@ -1987,9 +1986,9 @@ export default function WebGLMandalaGenerator() {
                               <>
                                 • Bass → Glow intensity + Image scale<br/>
                                 • Mid → Animation speed + Image rotation<br/>
-                                • Treble → Mandala scale + Mix intensity<br/>
+                                • Treble → Mandala scale<br/>
                                 • Combined → Position + HSL shifts<br/>
-                                <span className="text-green-400">✓ Colors always remain under your full control</span><br/>
+                                <span className="text-green-400">✓ Colors and Image Mix always remain under your full control</span><br/>
                                 <span className="text-yellow-400">💡 Manual adjustments pause audio control for 3 seconds</span>
                               </>
                             )}
