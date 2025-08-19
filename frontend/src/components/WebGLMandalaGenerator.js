@@ -214,7 +214,7 @@ export default function WebGLMandalaGenerator() {
   const [sym, setSym] = useState(12);
   const [glow, setGlow] = useState(1.2);
   const [speed, setSpeed] = useState(0.6);
-  const [scale, setScale] = useState(2.5);
+  const [scale, setScale] = useState(1.2);
   const [centerX, setCenterX] = useState(0.0);
   const [centerY, setCenterY] = useState(0.0);
   const [col1, setCol1] = useState("#ff6b6b");
