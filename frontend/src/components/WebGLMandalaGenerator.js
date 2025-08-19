@@ -551,8 +551,18 @@ export default function WebGLMandalaGenerator() {
     const calc = () => {
       const rect = el.getBoundingClientRect();
       const [aw, ah] = aspect === '1:1' ? [1, 1] : (aspect === '16:9' ? [16, 9] : [9, 16]);
-      const w = Math.max(1, Math.round(rect.width));
-      const h = Math.max(1, Math.round(w * ah / aw));
+      
+      let w = Math.max(1, Math.round(rect.width));
+      let h = Math.max(1, Math.round(w * ah / aw));
+      
+      // For 9:16 format, limit height to fit viewport better
+      if (aspect === '9:16') {
+        const maxHeight = Math.min(800, window.innerHeight * 0.7); // Max 70% of viewport or 800px
+        if (h > maxHeight) {
+          h = maxHeight;
+          w = Math.round(h * aw / ah);
+        }
+      }
 
       const r = rendererRef.current;
       const u = uniformsRef.current;
