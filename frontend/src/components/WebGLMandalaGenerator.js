@@ -810,7 +810,7 @@ export default function WebGLMandalaGenerator() {
     setSavedPresets(prev => prev.filter(p => p.key !== preset.key));
   };
 
-  // Export functionality
+  // Export functionality - Fixed to not affect preview
   const savePNG = () => {
     const r = rendererRef.current;
     const u = uniformsRef.current;
@@ -822,71 +822,93 @@ export default function WebGLMandalaGenerator() {
     const prevPaused = pausedRef.current;
     pausedRef.current = true;
     
-    // Store previous renderer state
-    const prevSize = new THREE.Vector2();
-    r.getSize(prevSize);
-    const prevCameraState = {
-      left: c.left,
-      right: c.right,
-      top: c.top,
-      bottom: c.bottom
-    };
-    
+    // Create temporary canvas for export without affecting preview
+    const tempCanvas = document.createElement('canvas');
     const [aw, ah] = aspect === '1:1' ? [1, 1] : (aspect === '16:9' ? [16, 9] : [9, 16]);
     const expW = Math.max(1, Math.round(size));
     const expH = Math.max(1, Math.round(expW * ah / aw));
-
-    // Update renderer size
-    r.setSize(expW, expH, false);
     
-    // Update uniforms with export dimensions
+    tempCanvas.width = expW;
+    tempCanvas.height = expH;
+    
+    // Create temporary renderer that won't affect preview
+    const tempRenderer = new THREE.WebGLRenderer({ 
+      canvas: tempCanvas,
+      antialias: true, 
+      preserveDrawingBuffer: true,
+      powerPreference: "high-performance"
+    });
+    
+    tempRenderer.setSize(expW, expH, false);
+    tempRenderer.setPixelRatio(1); // No DPR for export
+    
+    // Create temporary camera for export
+    const exportAspectRatio = expW / expH;
+    const tempCamera = new THREE.OrthographicCamera(
+      -exportAspectRatio, exportAspectRatio, 1, -1, 0, 1
+    );
+    
+    // Temporarily update uniforms for export resolution
+    const prevRes = { x: u.u_res.value.x, y: u.u_res.value.y };
     u.u_res.value.set(expW, expH);
     
-    // CRITICAL: Update camera projection to maintain coordinate system consistency
-    const exportAspectRatio = expW / expH;
-    c.left = -exportAspectRatio;
-    c.right = exportAspectRatio;
-    c.top = 1;
-    c.bottom = -1;
-    c.updateProjectionMatrix();
+    // Render to temporary canvas
+    tempRenderer.render(s, tempCamera);
     
-    // CRITICAL: Update text canvas dimensions for export
-    const textCanvas = textCanvasRef.current;
-    const prevTextDimensions = { width: 0, height: 0 };
-    if (textCanvas) {
-      prevTextDimensions.width = textCanvas.width;
-      prevTextDimensions.height = textCanvas.height;
-      textCanvas.width = expW;
-      textCanvas.height = expH;
-      
-      // Reset canvas context scaling for export
-      const ctx = textCanvas.getContext('2d');
-      if (ctx) {
-        ctx.scale(1, 1); // No DPR scaling for export
-      }
-    }
-    
-    // Render with consistent coordinate system
-    r.render(s, c);
-    
-    // Draw text overlay with export dimensions
-    drawTextOverlay();
-
-    const glCanvas = r.domElement;
+    // Create final export canvas
     const out = document.createElement('canvas');
     out.width = expW;
     out.height = expH;
     
     const ctx = out.getContext('2d');
     if (!ctx) {
+      // Restore uniforms and cleanup
+      u.u_res.value.set(prevRes.x, prevRes.y);
+      tempRenderer.dispose();
       pausedRef.current = prevPaused;
       return;
     }
     
-    ctx.drawImage(glCanvas, 0, 0);
+    // Copy WebGL render to export canvas
+    ctx.drawImage(tempCanvas, 0, 0);
     
+    // Add text overlay if enabled
     if (textEnabled && textCanvasRef.current) {
-      ctx.drawImage(textCanvasRef.current, 0, 0);
+      // Create temporary text canvas at export resolution
+      const tempTextCanvas = document.createElement('canvas');
+      tempTextCanvas.width = expW;
+      tempTextCanvas.height = expH;
+      
+      const tempTextCtx = tempTextCanvas.getContext('2d');
+      if (tempTextCtx) {
+        // Draw text at export resolution
+        tempTextCtx.save();
+        tempTextCtx.textAlign = textAlign;
+        tempTextCtx.textBaseline = 'top';
+        tempTextCtx.fillStyle = textColor;
+        
+        const fontWeight = textBold ? '700' : '400';
+        const fontStyle = textItalic ? 'italic' : 'normal';
+        const exportFontSize = textSize * (expW / 1024); // Scale font for export
+        tempTextCtx.font = `${fontStyle} ${fontWeight} ${exportFontSize}px 'Rosario', system-ui, -apple-system, sans-serif`;
+        
+        const x = (textX / 100) * expW;
+        const y = (textY / 100) * expH;
+        
+        // Simple text rendering for export
+        const lines = textValue.split('\n');
+        const lineHeight = exportFontSize * textLineHeight;
+        
+        lines.forEach((line, index) => {
+          const lineY = y + (index * lineHeight);
+          tempTextCtx.fillText(line, x, lineY);
+        });
+        
+        tempTextCtx.restore();
+        
+        // Composite text over mandala
+        ctx.drawImage(tempTextCanvas, 0, 0);
+      }
     }
 
     try {
@@ -902,33 +924,12 @@ export default function WebGLMandalaGenerator() {
       alert('Failed to export image');
     }
 
-    // Restore previous state
-    r.setSize(prevSize.x, prevSize.y, false);
-    u.u_res.value.set(prevSize.x, prevSize.y);
-    
-    // CRITICAL: Restore camera projection
-    c.left = prevCameraState.left;
-    c.right = prevCameraState.right;
-    c.top = prevCameraState.top;
-    c.bottom = prevCameraState.bottom;
-    c.updateProjectionMatrix();
-    
-    // CRITICAL: Restore text canvas dimensions
-    if (textCanvas) {
-      textCanvas.width = prevTextDimensions.width;
-      textCanvas.height = prevTextDimensions.height;
-      
-      // Restore DPR scaling
-      const ctx = textCanvas.getContext('2d');
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      if (ctx) {
-        ctx.scale(dpr, dpr);
-      }
-    }
-    
-    r.render(s, c);
+    // Cleanup - restore uniforms and dispose temporary renderer
+    u.u_res.value.set(prevRes.x, prevRes.y);
+    tempRenderer.dispose();
     pausedRef.current = prevPaused;
-    drawTextOverlay();
+    
+    // No need to restore preview renderer since we didn't touch it!
   };
 
   const randomize = () => {
