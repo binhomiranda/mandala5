@@ -565,8 +565,15 @@ export default function WebGLMandalaGenerator() {
       let displayWidth = logicalWidth;
       let displayHeight = logicalHeight;
       
-      // For 9:16 format, reduce only the VISUAL size, not the render resolution
-      if (aspect === '9:16') {
+      // Special handling for different aspect ratios
+      if (aspect === '16:9') {
+        // For 16:9 format, ensure proper proportions and reasonable size
+        const maxDisplayWidth = Math.min(logicalWidth, 800); // Limit width for better display
+        if (displayWidth > maxDisplayWidth) {
+          displayWidth = maxDisplayWidth;
+          displayHeight = Math.round(displayWidth * ah / aw);
+        }
+      } else if (aspect === '9:16') {
         const maxDisplayHeight = 700;
         if (displayHeight > maxDisplayHeight) {
           displayHeight = maxDisplayHeight;
