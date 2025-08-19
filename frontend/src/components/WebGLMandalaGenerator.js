@@ -898,7 +898,7 @@ export default function WebGLMandalaGenerator() {
       
       const tempTextCtx = tempTextCanvas.getContext('2d');
       if (tempTextCtx) {
-        // Draw text at export resolution
+        // Use SAME logic as drawTextOverlay() but scaled for export
         tempTextCtx.save();
         tempTextCtx.textAlign = textAlign;
         tempTextCtx.textBaseline = 'top';
@@ -912,12 +912,54 @@ export default function WebGLMandalaGenerator() {
         const x = (textX / 100) * expW;
         const y = (textY / 100) * expH;
         
-        // Simple text rendering for export
-        const lines = textValue.split('\n');
+        // SAME word wrap logic as preview
+        const maxWidth = expW * 0.9; // Use 90% of export canvas width
         const lineHeight = exportFontSize * textLineHeight;
         
-        lines.forEach((line, index) => {
-          const lineY = y + (index * lineHeight);
+        // Split text into paragraphs first (same as preview)
+        const paragraphs = textValue.split('\n');
+        const wrappedLines = [];
+        
+        paragraphs.forEach((paragraph) => {
+          if (paragraph.trim() === '') {
+            wrappedLines.push(''); // Empty line for paragraph break
+            return;
+          }
+          
+          const words = paragraph.split(' ');
+          let currentLine = '';
+          
+          words.forEach((word) => {
+            const testLine = currentLine ? currentLine + ' ' + word : word;
+            const testWidth = tempTextCtx.measureText(testLine).width;
+            
+            if (testWidth > maxWidth && currentLine !== '') {
+              wrappedLines.push(currentLine);
+              currentLine = word;
+            } else {
+              currentLine = testLine;
+            }
+          });
+          
+          if (currentLine) {
+            wrappedLines.push(currentLine);
+          }
+        });
+        
+        // Calculate total text height for proper alignment (same as preview)
+        const totalHeight = wrappedLines.length * lineHeight;
+        let startY = y;
+        
+        // Adjust vertical alignment based on textAlign (same as preview)
+        if (textAlign === 'center') {
+          startY = y - totalHeight / 2;
+        } else if (textAlign === 'end' || textAlign === 'right') {
+          startY = y - totalHeight;
+        }
+        
+        // Draw all lines with proper positioning (same as preview)
+        wrappedLines.forEach((line, index) => {
+          const lineY = startY + (index * lineHeight);
           tempTextCtx.fillText(line, x, lineY);
         });
         
