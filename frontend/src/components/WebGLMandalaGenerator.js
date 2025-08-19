@@ -584,7 +584,7 @@ export default function WebGLMandalaGenerator() {
     return () => ro.disconnect();
   }, [aspect]);
 
-  // Text overlay drawing
+  // Text overlay drawing with auto word wrap and Rosario font
   const drawTextOverlay = () => {
     const cvs = textCanvasRef.current;
     if (!cvs) return;
@@ -598,22 +598,67 @@ export default function WebGLMandalaGenerator() {
 
     ctx.save();
     ctx.textAlign = textAlign;
-    ctx.textBaseline = 'middle';
+    ctx.textBaseline = 'top';
     ctx.fillStyle = textColor;
-    const weight = textBold ? '700' : '400';
-    ctx.font = `${weight} ${textSize}px system-ui, -apple-system, sans-serif`;
+    
+    // Use Rosario font with proper styling
+    const fontWeight = textBold ? '700' : '400';
+    const fontStyle = textItalic ? 'italic' : 'normal';
+    ctx.font = `${fontStyle} ${fontWeight} ${textSize}px 'Rosario', system-ui, -apple-system, sans-serif`;
     
     const x = (textX / 100) * cvs.width;
     const y = (textY / 100) * cvs.height;
     
-    const lines = textValue.split('\n');
-    const lineHeight = textSize * 1.2;
-    const totalH = lineHeight * lines.length;
-    let yStart = y - totalH / 2 + lineHeight / 2;
+    // Auto word wrap implementation
+    const maxWidth = cvs.width * 0.9; // Use 90% of canvas width
+    const lineHeight = textSize * textLineHeight;
     
-    for (let i = 0; i < lines.length; i++) {
-      ctx.fillText(lines[i], x, yStart + i * lineHeight);
+    // Split text into paragraphs first
+    const paragraphs = textValue.split('\n');
+    const wrappedLines = [];
+    
+    paragraphs.forEach((paragraph) => {
+      if (paragraph.trim() === '') {
+        wrappedLines.push(''); // Empty line for paragraph break
+        return;
+      }
+      
+      const words = paragraph.split(' ');
+      let currentLine = '';
+      
+      words.forEach((word) => {
+        const testLine = currentLine ? currentLine + ' ' + word : word;
+        const testWidth = ctx.measureText(testLine).width;
+        
+        if (testWidth > maxWidth && currentLine !== '') {
+          wrappedLines.push(currentLine);
+          currentLine = word;
+        } else {
+          currentLine = testLine;
+        }
+      });
+      
+      if (currentLine) {
+        wrappedLines.push(currentLine);
+      }
+    });
+    
+    // Calculate total text height for centering
+    const totalHeight = wrappedLines.length * lineHeight;
+    let startY = y;
+    
+    // Adjust vertical alignment based on textAlign
+    if (textAlign === 'center') {
+      startY = y - totalHeight / 2;
+    } else if (textAlign === 'end' || textAlign === 'right') {
+      startY = y - totalHeight;
     }
+    
+    // Draw all lines
+    wrappedLines.forEach((line, index) => {
+      const lineY = startY + (index * lineHeight);
+      ctx.fillText(line, x, lineY);
+    });
     
     ctx.restore();
   };
