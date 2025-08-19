@@ -895,6 +895,87 @@ export default function WebGLMandalaGenerator() {
     );
   };
 
+  // Diagnostic function to collect real-time metrics
+  const updateDevMetrics = useCallback(() => {
+    if (!showDevPanel) return;
+    
+    const mount = mountRef.current;
+    const canvas = rendererRef.current?.domElement;
+    const stage = stageRef.current;
+    const textCanvas = textCanvasRef.current;
+    const renderer = rendererRef.current;
+    const uniforms = uniformsRef.current;
+    
+    if (!mount || !canvas || !stage) return;
+    
+    const stageRect = stage.getBoundingClientRect();
+    const canvasRect = canvas.getBoundingClientRect();
+    
+    // Calculate actual center
+    const centerX_calc = stageRect.width / 2;
+    const centerY_calc = stageRect.height / 2;
+    
+    // Calculate actual text position
+    const textActualX = (textX / 100) * stageRect.width;
+    const textActualY = (textY / 100) * stageRect.height;
+    
+    const metrics = {
+      canvasWidth: canvas.width,
+      canvasHeight: canvas.height,
+      clientWidth: canvas.clientWidth,
+      clientHeight: canvas.clientHeight,
+      devicePixelRatio: window.devicePixelRatio,
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
+      aspectRatio: aspect,
+      centerCalculated: { x: centerX_calc, y: centerY_calc },
+      textPosition: { 
+        x: textX, 
+        y: textY, 
+        actualX: textActualX, 
+        actualY: textActualY 
+      },
+      rendererSize: renderer ? { 
+        width: renderer.getSize(new THREE.Vector2()).width, 
+        height: renderer.getSize(new THREE.Vector2()).height 
+      } : { width: 0, height: 0 },
+      stageRect: { 
+        width: stageRect.width, 
+        height: stageRect.height, 
+        x: stageRect.x, 
+        y: stageRect.y 
+      },
+      uniformsResolution: uniforms ? { 
+        x: uniforms.u_res.value.x, 
+        y: uniforms.u_res.value.y 
+      } : { x: 0, y: 0 },
+      lastUpdate: new Date().toLocaleTimeString()
+    };
+    
+    setDevMetrics(metrics);
+  }, [showDevPanel, aspect, textX, textY]);
+
+  // Update dev metrics periodically when panel is open
+  useEffect(() => {
+    if (!showDevPanel) return;
+    
+    updateDevMetrics();
+    const interval = setInterval(updateDevMetrics, 1000);
+    return () => clearInterval(interval);
+  }, [showDevPanel, updateDevMetrics]);
+
+  // Update dev metrics on window resize
+  useEffect(() => {
+    if (!showDevPanel) return;
+    
+    const handleResize = () => {
+      setTimeout(updateDevMetrics, 100); // Delay to ensure DOM updates
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [showDevPanel, updateDevMetrics]);
+
   return (
     <div className="w-full min-h-screen bg-black text-white">
       {/* Header */}
