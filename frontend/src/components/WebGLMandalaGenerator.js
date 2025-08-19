@@ -1330,7 +1330,7 @@ export default function WebGLMandalaGenerator() {
                         <Slider 
                           min={0.2} max={3} step={0.05} 
                           value={[glow]} 
-                          onValueChange={manualSetGlow}
+                          onValueChange={([v]) => setGlow(v)}
                           className="w-full"
                         />
                       </div>
