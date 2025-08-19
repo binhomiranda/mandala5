@@ -1496,6 +1496,18 @@ export default function WebGLMandalaGenerator() {
                         </div>
 
                         <div className="p-4 bg-zinc-800 rounded-lg">
+                          <label className="text-sm font-medium text-zinc-300 block mb-2">Line Height</label>
+                          <div className="text-xs text-zinc-400 mb-2">{textLineHeight.toFixed(1)}×</div>
+                          <Slider 
+                            min={0.8} max={2.5} step={0.1} 
+                            value={[textLineHeight]} 
+                            onValueChange={([v]) => setTextLineHeight(v)}
+                            className="w-full"
+                          />
+                          <div className="text-xs text-zinc-500 mt-2">Controls spacing between lines. Uses Rosario font family.</div>
+                        </div>
+
+                        <div className="p-4 bg-zinc-800 rounded-lg">
                           <label className="text-sm font-medium text-zinc-300 block mb-2">Background Dimmer</label>
                           <div className="text-xs text-zinc-400 mb-2">Darken background behind text: {Math.round(bgDim * 100)}%</div>
                           <Slider 
@@ -1520,34 +1532,6 @@ export default function WebGLMandalaGenerator() {
                             <RotateCcw className="w-3 h-3 mr-2" />
                             Reset Position
                           </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => setTextBold(!textBold)}
-                            className={`flex-1 ${textBold ? 'bg-green-500 text-black hover:bg-green-600' : 'bg-zinc-700 hover:bg-zinc-600 border-zinc-600 text-zinc-300'}`}
-                          >
-                            {textBold ? 'Bold ON' : 'Bold OFF'}
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => setTextItalic(!textItalic)}
-                            className={`flex-1 ${textItalic ? 'bg-green-500 text-black hover:bg-green-600' : 'bg-zinc-700 hover:bg-zinc-600 border-zinc-600 text-zinc-300'}`}
-                          >
-                            {textItalic ? 'Italic ON' : 'Italic OFF'}
-                          </Button>
-                        </div>
-
-                        <div className="p-4 bg-zinc-800 rounded-lg">
-                          <label className="text-sm font-medium text-zinc-300 block mb-2">Line Height</label>
-                          <div className="text-xs text-zinc-400 mb-2">{textLineHeight.toFixed(1)}×</div>
-                          <Slider 
-                            min={0.8} max={2.5} step={0.1} 
-                            value={[textLineHeight]} 
-                            onValueChange={([v]) => setTextLineHeight(v)}
-                            className="w-full"
-                          />
-                          <div className="text-xs text-zinc-500 mt-2">Controls spacing between lines. Uses Rosario font family.</div>
                         </div>
                       </div>
                     )}
