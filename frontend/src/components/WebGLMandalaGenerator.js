@@ -100,7 +100,7 @@ vec3 hsl2rgb(vec3 hsl){
 }
 
 void main(){
-  vec2 uv = (gl_FragCoord.xy - 0.5*u_res.xy) / u_res.y;
+  vec2 uv = (gl_FragCoord.xy - 0.5*u_res.xy) / (0.5*u_res.xy);
   uv -= u_center;
 
   float t = u_time * u_speed;
