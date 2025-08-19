@@ -590,14 +590,24 @@ export default function WebGLMandalaGenerator() {
         r.domElement.style.width = `${displayWidth}px`;
         r.domElement.style.height = `${displayHeight}px`;
         
-        // Ensure proper centering by updating camera if needed
+        // Camera setup for aspect ratio handling
         const camera = cameraRef.current;
         if (camera && camera.isOrthographicCamera) {
-          const aspect_ratio = renderWidth / renderHeight;
-          camera.left = -aspect_ratio;
-          camera.right = aspect_ratio;
-          camera.top = 1;
-          camera.bottom = -1;
+          if (aspect === '16:9') {
+            // For 16:9, stretch the mandala to fill width by adjusting camera bounds
+            const aspect_ratio = renderWidth / renderHeight;
+            camera.left = -1; // Fixed bounds to stretch mandala
+            camera.right = 1;
+            camera.top = 1 / aspect_ratio;
+            camera.bottom = -1 / aspect_ratio;
+          } else {
+            // Standard aspect ratio handling for 1:1 and 9:16
+            const aspect_ratio = renderWidth / renderHeight;
+            camera.left = -aspect_ratio;
+            camera.right = aspect_ratio;
+            camera.top = 1;
+            camera.bottom = -1;
+          }
           camera.updateProjectionMatrix();
         }
         
