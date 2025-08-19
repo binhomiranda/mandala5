@@ -531,23 +531,34 @@ export default function WebGLMandalaGenerator() {
       const rect = el.getBoundingClientRect();
       const [aw, ah] = aspect === '1:1' ? [1, 1] : (aspect === '16:9' ? [16, 9] : [9, 16]);
       
+      // Always maintain high resolution for render quality
       let w = Math.max(1, Math.round(rect.width));
       let h = Math.max(1, Math.round(w * ah / aw));
       
-      // For 9:16 format, make it VERY small - much less than half
+      // Visual display size (different from render resolution)
+      let displayWidth = w;
+      let displayHeight = h;
+      
+      // For 9:16 format, reduce only the VISUAL size, not the render resolution
       if (aspect === '9:16') {
-        const maxHeight = 120; // Very small - less than quarter of screen
-        if (h > maxHeight) {
-          h = maxHeight;
-          w = Math.round(h * aw / ah);
+        const maxDisplayHeight = 150; // Small visual display
+        if (displayHeight > maxDisplayHeight) {
+          displayHeight = maxDisplayHeight;
+          displayWidth = Math.round(displayHeight * aw / ah);
         }
       }
 
       const r = rendererRef.current;
       const u = uniformsRef.current;
       if (r && u) {
+        // Render at full resolution for quality
         r.setSize(w, h, false);
         u.u_res.value.set(w, h);
+        
+        // Set CSS size for visual display
+        r.domElement.style.width = `${displayWidth}px`;
+        r.domElement.style.height = `${displayHeight}px`;
+        
         r.render(sceneRef.current, cameraRef.current);
       }
 
@@ -557,6 +568,9 @@ export default function WebGLMandalaGenerator() {
           c.width = w;
           c.height = h;
         }
+        // Match text canvas visual size to WebGL canvas
+        c.style.width = `${displayWidth}px`;
+        c.style.height = `${displayHeight}px`;
       }
       drawTextOverlay();
     };
