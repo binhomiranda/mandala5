@@ -850,9 +850,26 @@ export default function WebGLMandalaGenerator() {
     c.bottom = -1;
     c.updateProjectionMatrix();
     
+    // CRITICAL: Update text canvas dimensions for export
+    const textCanvas = textCanvasRef.current;
+    const prevTextDimensions = { width: 0, height: 0 };
+    if (textCanvas) {
+      prevTextDimensions.width = textCanvas.width;
+      prevTextDimensions.height = textCanvas.height;
+      textCanvas.width = expW;
+      textCanvas.height = expH;
+      
+      // Reset canvas context scaling for export
+      const ctx = textCanvas.getContext('2d');
+      if (ctx) {
+        ctx.scale(1, 1); // No DPR scaling for export
+      }
+    }
+    
     // Render with consistent coordinate system
     r.render(s, c);
     
+    // Draw text overlay with export dimensions
     drawTextOverlay();
 
     const glCanvas = r.domElement;
