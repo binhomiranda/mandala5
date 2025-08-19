@@ -543,7 +543,7 @@ export default function WebGLMandalaGenerator() {
     if (u && tex) u.u_tex.value = tex;
   }, [tex]);
 
-  // Responsive preview sizing
+  // Canvas sizing with proper coordinate system
   useEffect(() => {
     const el = stageRef.current;
     if (!el) return;
@@ -551,48 +551,82 @@ export default function WebGLMandalaGenerator() {
     const calc = () => {
       const rect = el.getBoundingClientRect();
       const [aw, ah] = aspect === '1:1' ? [1, 1] : (aspect === '16:9' ? [16, 9] : [9, 16]);
+      const dpr = Math.min(window.devicePixelRatio || 1, 2); // Cap DPR to prevent excessive memory usage
       
-      // Always maintain high resolution for render quality
-      let w = Math.max(1, Math.round(rect.width));
-      let h = Math.max(1, Math.round(w * ah / aw));
+      // Calculate logical dimensions
+      let logicalWidth = Math.max(1, Math.round(rect.width));
+      let logicalHeight = Math.max(1, Math.round(logicalWidth * ah / aw));
       
-      // Visual display size (different from render resolution)
-      let displayWidth = w;
-      let displayHeight = h;
+      // Calculate actual render dimensions with DPR
+      let renderWidth = Math.round(logicalWidth * dpr);
+      let renderHeight = Math.round(logicalHeight * dpr);
+      
+      // Visual display size (for CSS)
+      let displayWidth = logicalWidth;
+      let displayHeight = logicalHeight;
       
       // For 9:16 format, reduce only the VISUAL size, not the render resolution
       if (aspect === '9:16') {
-        const maxDisplayHeight = 700; // Larger size as requested
+        const maxDisplayHeight = 700;
         if (displayHeight > maxDisplayHeight) {
           displayHeight = maxDisplayHeight;
           displayWidth = Math.round(displayHeight * aw / ah);
+          // Keep render resolution high for quality
         }
       }
 
       const r = rendererRef.current;
       const u = uniformsRef.current;
       if (r && u) {
-        // Render at full resolution for quality
-        r.setSize(w, h, false);
-        u.u_res.value.set(w, h);
+        // Set renderer size with proper DPR handling
+        r.setSize(logicalWidth, logicalHeight, false);
+        r.setPixelRatio(dpr);
+        
+        // Update uniforms with actual render dimensions
+        u.u_res.value.set(renderWidth, renderHeight);
         
         // Set CSS size for visual display
         r.domElement.style.width = `${displayWidth}px`;
         r.domElement.style.height = `${displayHeight}px`;
         
+        // Ensure proper centering by updating camera if needed
+        const camera = cameraRef.current;
+        if (camera && camera.isOrthographicCamera) {
+          const aspect_ratio = renderWidth / renderHeight;
+          camera.left = -aspect_ratio;
+          camera.right = aspect_ratio;
+          camera.top = 1;
+          camera.bottom = -1;
+          camera.updateProjectionMatrix();
+        }
+        
         r.render(sceneRef.current, cameraRef.current);
       }
 
+      // Sync text canvas with proper dimensions
       if (textCanvasRef.current) {
         const c = textCanvasRef.current;
-        if (c.width !== w || c.height !== h) {
-          c.width = w;
-          c.height = h;
+        // Set canvas buffer size to match render resolution
+        if (c.width !== renderWidth || c.height !== renderHeight) {
+          c.width = renderWidth;
+          c.height = renderHeight;
         }
-        // Match text canvas visual size to WebGL canvas
+        // Set CSS size to match display size
         c.style.width = `${displayWidth}px`;
         c.style.height = `${displayHeight}px`;
+        
+        // Update canvas context scale for DPR
+        const ctx = c.getContext('2d');
+        if (ctx) {
+          ctx.scale(dpr, dpr);
+        }
       }
+      
+      // Update dev metrics when panel is open
+      if (showDevPanel) {
+        updateDevMetrics();
+      }
+      
       drawTextOverlay();
     };
 
@@ -601,7 +635,7 @@ export default function WebGLMandalaGenerator() {
     calc();
 
     return () => ro.disconnect();
-  }, [aspect]);
+  }, [aspect, showDevPanel]);
 
   // Text overlay drawing with auto word wrap and Rosario font
   const drawTextOverlay = () => {
