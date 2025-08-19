@@ -232,20 +232,20 @@ frontend:
         agent: "main"
         comment: "Implemented responsive aspect ratio controls with proper canvas resizing. Preview dynamically adjusts to selected format while preserving export quality"
         
-  - task: "Command Panel Status Display"
+  - task: "Text Overlay UI Reorganization"
     implemented: true
     working: true
     file: "components/WebGLMandalaGenerator.js"
     stuck_count: 0
-    priority: "low"
+    priority: "high"
     needs_retesting: false
     status_history:
-      - working: false
-        agent: "user"
-        comment: "User requests small command panel showing what features are on/off without interfering with artwork view"
+      - working: "NA"
+        agent: "main"
+        comment: "Reorganized Text Overlay panel UI to follow logical flow for text application: moved Line Height control below Position X/Y controls, moved Bold ON/OFF and Italic buttons next to Color control for better grouping"
       - working: true
         agent: "main"
-        comment: "Implemented small status overlay panel in top-left corner showing active features (Text, Stars, Image, Effects, Dim BG) with colored indicators. Non-intrusive design that doesn't interfere with mandala viewing"
+        comment: "UI reorganization completed successfully. Text controls now follow logical flow: Content -> Size/Color/Bold/Italic -> Position X/Y -> Line Height -> Background Dimmer -> Reset Position. This provides a more intuitive workflow for users applying text to their mandalas."
 
 metadata:
   created_by: "main_agent"
