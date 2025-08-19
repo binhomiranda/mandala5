@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Text functionality is not working. Quick Actions not working. Analyze and search for bugs throughout the application. Add responsive preview sizing for 1:1, 16:9, 9:16 formats without compromising final export. Add small command panel showing what's on/off."
+user_problem_statement: "Reorganize Text Overlay UI: Move Line Height below Position X/Y and Bold ON/OFF and Italic buttons next to the color controls."
 
 backend:
   - task: "API Backend Health Check"
