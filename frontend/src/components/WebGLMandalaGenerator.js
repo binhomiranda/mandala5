@@ -853,11 +853,17 @@ export default function WebGLMandalaGenerator() {
     tempRenderer.setSize(expW, expH, false);
     tempRenderer.setPixelRatio(1); // No DPR for export
     
-    // Create temporary camera for export
+    // Create temporary camera for export with same aspect logic as preview
     const exportAspectRatio = expW / expH;
-    const tempCamera = new THREE.OrthographicCamera(
-      -exportAspectRatio, exportAspectRatio, 1, -1, 0, 1
-    );
+    let tempCamera;
+    
+    if (aspect === '16:9') {
+      // For 16:9, use same stretch logic as preview
+      tempCamera = new THREE.OrthographicCamera(-1, 1, 1 / exportAspectRatio, -1 / exportAspectRatio, 0, 1);
+    } else {
+      // Standard camera for 1:1 and 9:16
+      tempCamera = new THREE.OrthographicCamera(-exportAspectRatio, exportAspectRatio, 1, -1, 0, 1);
+    }
     
     // Temporarily update uniforms for export resolution
     const prevRes = { x: u.u_res.value.x, y: u.u_res.value.y };
