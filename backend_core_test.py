@@ -8,7 +8,7 @@ import json
 import time
 from datetime import datetime
 
-BACKEND_URL = "https://kaleidoscope-gen.preview.emergentagent.com/api"
+BACKEND_URL = "https://mandala-forge.preview.emergentagent.com/api"
 
 def test_core_functionality():
     """Test core backend functionality that affects frontend operations"""

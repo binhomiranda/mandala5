@@ -19,10 +19,10 @@ def get_backend_url():
                 if line.startswith('REACT_APP_BACKEND_URL='):
                     base_url = line.split('=', 1)[1].strip()
                     return f"{base_url}/api"
-        return "https://kaleidoscope-gen.preview.emergentagent.com/api"
+        return "https://mandala-forge.preview.emergentagent.com/api"
     except Exception as e:
         print(f"Warning: Could not read frontend .env file: {e}")
-        return "https://kaleidoscope-gen.preview.emergentagent.com/api"
+        return "https://mandala-forge.preview.emergentagent.com/api"
 
 BACKEND_URL = get_backend_url()
 print(f"Testing backend at: {BACKEND_URL}")
