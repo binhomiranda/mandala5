@@ -635,7 +635,7 @@ export default function WebGLMandalaGenerator() {
       textAlign, textColor, textBold, bgDim,
       useTex, texMix, texScale, texRot, texCX, texCY, texMirror,
       imgHueDeg, imgSat, imgLight,
-      aspect, size, audioIntensity, audioSensitivity, audioControlMode
+      aspect, size
     };
     
     const presetKey = `mandala_preset_${newPresetName.trim()}`;
