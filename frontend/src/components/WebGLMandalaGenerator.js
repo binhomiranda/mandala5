@@ -907,12 +907,7 @@ export default function WebGLMandalaGenerator() {
                 {/* Status Panel - Small overlay showing active features */}
                 <div className="absolute top-2 left-2 bg-black/50 backdrop-blur-sm rounded-lg p-2 z-20 text-xs text-white/80 space-y-1">
                   <div className="font-medium text-white/90 mb-1">Active</div>
-                  {audioEnabled && (
-                    <div className="flex items-center gap-1">
-                      <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></div>
-                      <span>Audio Reactive</span>
-                    </div>
-                  )}
+
                   {textEnabled && (
                     <div className="flex items-center gap-1">
                       <div className="w-1.5 h-1.5 bg-blue-400 rounded-full"></div>
