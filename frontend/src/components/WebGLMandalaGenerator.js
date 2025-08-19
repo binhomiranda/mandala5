@@ -534,9 +534,9 @@ export default function WebGLMandalaGenerator() {
       let w = Math.max(1, Math.round(rect.width));
       let h = Math.max(1, Math.round(w * ah / aw));
       
-      // For 9:16 format, make it MUCH smaller - less than half current size
+      // For 9:16 format, make it VERY small - much less than half
       if (aspect === '9:16') {
-        const maxHeight = 200; // Very small fixed height - less than half of current
+        const maxHeight = 120; // Very small - less than quarter of screen
         if (h > maxHeight) {
           h = maxHeight;
           w = Math.round(h * aw / ah);
