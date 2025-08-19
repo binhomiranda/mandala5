@@ -1137,6 +1137,22 @@ export default function WebGLMandalaGenerator() {
                   {label}
                 </Button>
               ))}
+              
+              {/* DEV Tab - Collapsible */}
+              <div className="border-t border-zinc-700 pt-2 mt-4">
+                <Button
+                  variant="ghost"
+                  onClick={() => setShowDevPanel(!showDevPanel)}
+                  className={`w-full justify-start text-xs font-medium rounded-md transition-colors ${
+                    showDevPanel 
+                      ? 'bg-zinc-800 text-orange-400' 
+                      : 'text-zinc-500 hover:text-orange-400 hover:bg-zinc-800/50'
+                  }`}
+                >
+                  <Code className="w-3 h-3 mr-3" />
+                  DEV {showDevPanel ? '▼' : '▶'}
+                </Button>
+              </div>
             </div>
 
             {/* Panel Content */}
