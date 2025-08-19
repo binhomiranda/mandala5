@@ -610,16 +610,16 @@ export default function WebGLMandalaGenerator() {
         if (c.width !== renderWidth || c.height !== renderHeight) {
           c.width = renderWidth;
           c.height = renderHeight;
+          
+          // Update canvas context scale for DPR after setting size
+          const ctx = c.getContext('2d');
+          if (ctx) {
+            ctx.scale(dpr, dpr);
+          }
         }
         // Set CSS size to match display size
         c.style.width = `${displayWidth}px`;
         c.style.height = `${displayHeight}px`;
-        
-        // Update canvas context scale for DPR
-        const ctx = c.getContext('2d');
-        if (ctx) {
-          ctx.scale(dpr, dpr);
-        }
       }
       
       // Update dev metrics when panel is open
