@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { Button } from "./ui/button";
 import { Slider } from "./ui/slider";
 import { Input } from "./ui/input";
-import { Sparkles, Download, RefreshCw, Pause, Play, RotateCcw, Upload, Eye, EyeOff, Palette, Settings, Zap, Star, Trash2, Plus, Check, X, Code } from "lucide-react";
+import { Sparkles, Download, RefreshCw, Pause, Play, RotateCcw, Upload, Eye, EyeOff, Palette, Settings, Zap, Star, Trash2, Plus, Check, X, Code, Clock } from "lucide-react";
 
 // Fragment shader with kaleidoscope + HSL for image, stars, effects
 const frag = `
@@ -184,7 +184,7 @@ void main(){
 const vert = `
 precision highp float;
 varying vec2 vUv;
-void main(){
+void main() {
   vUv = uv;
   gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 }
@@ -549,14 +549,20 @@ export default function WebGLMandalaGenerator() {
     if (!el) return;
 
     const calc = () => {
-      const rect = el.getBoundingClientRect();
-      const [aw, ah] = aspect === '1:1' ? [1, 1] : (aspect === '16:9' ? [16, 9] : [9, 16]);
+ const rect = el.getBoundingClientRect();
+      const aspectMap = {
+ '1:1': [1, 1],
+ '4:5': [4, 5],
+ '16:9': [16, 9],
+ '9:16': [9, 16],
+      };
+      const [aw, ah] = aspectMap[aspect] || [1, 1]; // Use the map to get aspect ratio pair
       const dpr = Math.min(window.devicePixelRatio || 1, 2); // Cap DPR to prevent excessive memory usage
       
       // Calculate logical dimensions
       let logicalWidth = Math.max(1, Math.round(rect.width));
       let logicalHeight = Math.max(1, Math.round(logicalWidth * ah / aw));
-      
+
       // Calculate actual render dimensions with DPR
       let renderWidth = Math.round(logicalWidth * dpr);
       let renderHeight = Math.round(logicalHeight * dpr);
@@ -588,7 +594,7 @@ export default function WebGLMandalaGenerator() {
         
         // Set CSS size for visual display
         r.domElement.style.width = `${displayWidth}px`;
-        r.domElement.style.height = `${displayHeight}px`;
+        r.domElement.style.height = `${displayHeight}px`; // Keep this line as it sets the *display* height
         
         // Camera setup for aspect ratio handling
         const camera = cameraRef.current;
@@ -600,8 +606,15 @@ export default function WebGLMandalaGenerator() {
             camera.right = 1;
             camera.top = 1 / aspect_ratio;
             camera.bottom = -1 / aspect_ratio;
-          } else {
+          } else if (aspect === '4:5') {
+            // For 4:5, fit the content vertically
+            const aspect_ratio = renderWidth / renderHeight; // Calculate actual render aspect ratio
+            camera.left = -aspect_ratio; 
+            camera.right = aspect_ratio;
+            camera.top = 1;
+            camera.bottom = -1;
             // Standard aspect ratio handling for 1:1 and 9:16
+          } else {
             const aspect_ratio = renderWidth / renderHeight;
             camera.left = -aspect_ratio;
             camera.right = aspect_ratio;
@@ -656,34 +669,48 @@ export default function WebGLMandalaGenerator() {
     const ctx = cvs.getContext('2d');
     if (!ctx) return;
 
-    // Clear the entire canvas
+    // Clear the entire canvas - necessary if scaling context
+    ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transformation before clearing
     ctx.clearRect(0, 0, cvs.width, cvs.height);
     
     if (!textEnabled || !textValue.trim()) return;
 
     ctx.save();
     
-    // FIXED: Always use canvas dimensions directly for positioning
+    // Use the current canvas dimensions for drawing
     const canvasWidth = cvs.width;
     const canvasHeight = cvs.height;
     
-    // Calculate text position using canvas dimensions (not logical)
-    const x = (textX / 100) * canvasWidth;
-    const y = (textY / 100) * canvasHeight;
+    // Calculate the intended export dimensions based on 'size' and 'aspect'
+    const [aw, ah] = aspect === '1:1' ? [1, 1] : (aspect === '16:9' ? [16, 9] : [9, 16]);
+    const intendedExportWidth = Math.max(1, size);
+    const intendedExportHeight = Math.max(1, Math.round(intendedExportWidth * ah / aw));
+
+    // Calculate the text position in terms of intended export dimensions
+    const exportX = (textX / 100) * intendedExportWidth;
+    const exportY = (textY / 100) * intendedExportHeight;
+
+    // Scale the export position to the current preview canvas dimensions
+    const previewX = exportX * (canvasWidth / intendedExportWidth);
+    const previewY = exportY * (canvasHeight / intendedExportHeight);
     
     // Set text properties
-    ctx.textAlign = textAlign;
-    ctx.textBaseline = 'top';
-    ctx.fillStyle = textColor;
-    
     // Use Rosario font with proper styling - scale font based on canvas width
-    const fontWeight = textBold ? '700' : '400';
+    // Adjusted font scaling to be more directly proportional to current canvas height
+    const fontWeight = textBold ? 'bold' : 'normal';
     const fontStyle = textItalic ? 'italic' : 'normal';
     const scaledFontSize = textSize * (canvasWidth / 1024); // Scale font to canvas size
     ctx.font = `${fontStyle} ${fontWeight} ${scaledFontSize}px 'Rosario', system-ui, -apple-system, sans-serif`;
     
+    ctx.textAlign = textAlign;
+    ctx.textBaseline = 'top';
+    ctx.fillStyle = textColor;
+
     // Auto word wrap implementation using canvas dimensions
-    const maxWidth = canvasWidth * 0.9; // Use 90% of canvas width
+    // Ensure word wrap width is based on the *scaled* preview width
+    // and not the intended export width. Using 90% of the preview canvas width
+    // seems appropriate for maintaining layout consistency in the preview.
+    const maxWidth = canvasWidth * 0.9; 
     const lineHeight = scaledFontSize * textLineHeight;
     
     // Split text into paragraphs first
@@ -718,19 +745,19 @@ export default function WebGLMandalaGenerator() {
     
     // Calculate total text height for proper alignment
     const totalHeight = wrappedLines.length * lineHeight;
-    let startY = y;
+    let startY = previewY; // Use previewY here
     
     // Adjust vertical alignment based on textAlign
-    if (textAlign === 'center') {
-      startY = y - totalHeight / 2;
-    } else if (textAlign === 'end' || textAlign === 'right') {
-      startY = y - totalHeight;
+    if (textAlign === 'center') { // Centered horizontally, adjust vertical
+      startY = previewY - totalHeight / 2;
+    } else if (textAlign === 'end' || textAlign === 'right') { // Right aligned horizontally, adjust vertical
+       startY = previewY - totalHeight;
     }
-    
-    // Draw all lines with proper positioning
+
+    // Draw all lines using the scaled preview coordinates
     wrappedLines.forEach((line, index) => {
-      const lineY = startY + (index * lineHeight);
-      ctx.fillText(line, x, lineY);
+      const lineY = startY + (index * lineHeight); // Use startY here
+ ctx.fillText(line, previewX, lineY); // Use previewX here
     });
     
     ctx.restore();
@@ -827,15 +854,33 @@ export default function WebGLMandalaGenerator() {
     
     if (!r || !u || !s || !c) return;
 
+    const aspectMap = {
+      '1:1': [1, 1],
+      '4:5': [4, 5], // Changed from 5:4 to 4:5
+ '16:9': [16, 9],
+      '9:16': [9, 16],
+    };
+    const [aw, ah] = aspectMap[aspect] || [1, 1]; // Get aspect ratio pair for export calculation
+    // --- END Calculation based on ResizeObserver's calc function ---
+
     const prevPaused = pausedRef.current;
     pausedRef.current = true;
     
     // Create temporary canvas for export without affecting preview
     const tempCanvas = document.createElement('canvas');
-    const [aw, ah] = aspect === '1:1' ? [1, 1] : (aspect === '16:9' ? [16, 9] : [9, 16]);
-    const expW = Math.max(1, Math.round(size));
-    const expH = Math.max(1, Math.round(expW * ah / aw));
     
+    // --- START Calculation based on ResizeObserver's calc function ---
+    // Use the same logic as the preview's ResizeObserver to calculate dimensions
+    
+    // Calculate export dimensions based on 'size' state variable
+    // For 1:1 and 16:9, 'size' acts as the width
+    // For 9:16, 'size' should effectively act as the max *height* to match preview behavior
+    // However, the current preview logic for 9:16 keeps render resolution high
+    // Use size as the base for width, and calculate height based on aspect ratio
+ const exportAspectRatio = aw / ah;
+ let expW, expH;
+ expW = Math.max(1, Math.round(size)); // Always use size as base for width
+ expH = Math.max(1, Math.round(expW * (ah / aw))); // Calculate height based on 4:5 aspect
     tempCanvas.width = expW;
     tempCanvas.height = expH;
     
@@ -850,17 +895,30 @@ export default function WebGLMandalaGenerator() {
     tempRenderer.setSize(expW, expH, false);
     tempRenderer.setPixelRatio(1); // No DPR for export
     
-    // Create temporary camera for export with same aspect logic as preview
-    const exportAspectRatio = expW / expH;
-    let tempCamera;
-    
-    if (aspect === '16:9') {
-      // For 16:9, use same stretch logic as preview
-      tempCamera = new THREE.OrthographicCamera(-1, 1, 1 / exportAspectRatio, -1 / exportAspectRatio, 0, 1);
-    } else {
-      // Standard camera for 1:1 and 9:16
-      tempCamera = new THREE.OrthographicCamera(-exportAspectRatio, exportAspectRatio, 1, -1, 0, 1);
-    }
+    // Create temporary camera for export mirroring preview aspect logic based on the *calculated* export dimensions
+// ✅ NEW CORRECTED LOGIC
+let tempCamera;
+const aspectRatio = expW / expH;
+
+// For 4:5 (portrait), we need to scale the camera to match preview
+if (aspect === '4:5' || aspect === '9:16') {
+  // Make taller content fill the frame properly
+  tempCamera = new THREE.OrthographicCamera(
+    -aspectRatio, aspectRatio, 
+    1, -1, 
+    0, 1
+  );
+} else if (aspect === '16:9') {
+  // Landscape - wider content
+  tempCamera = new THREE.OrthographicCamera(
+    -1, 1, 
+    1/aspectRatio, -1/aspectRatio, 
+    0, 1
+  );
+} else {
+  // 1:1 square
+  tempCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+}
     
     // Temporarily update uniforms for export resolution
     const prevRes = { x: u.u_res.value.x, y: u.u_res.value.y };
@@ -889,6 +947,7 @@ export default function WebGLMandalaGenerator() {
     // Add text overlay if enabled - CREATE SEPARATE CANVAS TO NOT INTERFERE
     if (textEnabled && textValue.trim()) {
       // Create completely separate canvas for export text
+      // Ensure it matches the size of the WebGL render canvas
       const exportTextCanvas = document.createElement('canvas');
       exportTextCanvas.width = expW;
       exportTextCanvas.height = expH;
@@ -903,10 +962,10 @@ export default function WebGLMandalaGenerator() {
         // Font setup - scale to export size
         const fontWeight = textBold ? '700' : '400';
         const fontStyle = textItalic ? 'italic' : 'normal';
-        const exportFontSize = textSize * (expW / 1024);
+        const exportFontSize = textSize * (expW / 1024); // Scale font based on export width relative to a base (1024)
         exportCtx.font = `${fontStyle} ${fontWeight} ${exportFontSize}px 'Rosario', system-ui, -apple-system, sans-serif`;
         
-        // Position calculation - use SAME percentage system as preview
+        // Position calculation - use SAME percentage system as preview relative to export canvas dimensions
         const x = (textX / 100) * expW;
         const y = (textY / 100) * expH;
         
@@ -1191,7 +1250,7 @@ export default function WebGLMandalaGenerator() {
               
               <div className="flex items-center gap-3">
                 <div className="flex gap-1 bg-zinc-800 p-1 rounded-lg">
-                  {['1:1', '16:9', '9:16'].map((ratio) => (
+                  {['1:1', '4:5', '9:16'].map((ratio) => ( // Changed '5:4' to '4:5' in the button list
                     <Button
                       key={ratio}
                       size="sm"
@@ -1223,7 +1282,7 @@ export default function WebGLMandalaGenerator() {
                 ref={stageRef}
                 className="w-full relative rounded-lg overflow-hidden bg-black shadow-2xl"
                 style={{
-                  aspectRatio: aspect === '1:1' ? '1 / 1' : (aspect === '16:9' ? '16 / 9' : '9 / 16'),
+                  aspectRatio: aspect === '1:1' ? '1 / 1' : (aspect === '16:9' ? '16 / 9' : (aspect === '4:5' ? '4 / 5' : '9 / 16')), // Added '4:5'
                 }}
               >
                 <div ref={mountRef} className="absolute inset-0" />
@@ -1254,7 +1313,7 @@ export default function WebGLMandalaGenerator() {
                   {effectType > 0 && (
                     <div className="flex items-center gap-1">
                       <div className="w-1.5 h-1.5 bg-orange-400 rounded-full"></div>
-                      <span>{effectType === 1 ? 'Ripple' : 'Wave'}</span>
+                      <span>{effectType === 1 ? 'Ripple' : 'Onda'}</span>
                     </div>
                   )}
                   {bgDim > 0 && (
@@ -1278,24 +1337,37 @@ export default function WebGLMandalaGenerator() {
             {/* Tab Navigation */}
             <div className="space-y-2 mb-6">
               {[
-                { id: 'geometry', label: 'Geometry', icon: Settings },
-                { id: 'colors', label: 'Colors', icon: Palette },
-                { id: 'kaleidoscope', label: 'Kaleidoscope', icon: Upload },
-                { id: 'effects', label: 'Effects', icon: Zap },
-                { id: 'text', label: 'Text', icon: Star }
+                { id: 'geometry', label: 'Geometrias Sagradas', icon: Settings },
+                { id: 'colors', label: 'Cromoterapia', icon: Palette },
+                { id: 'kaleidoscope', label: 'Mandalas', icon: Upload },
+                { id: 'effects', label: 'Vibrações Visuais', icon: Zap },
+                { id: 'text', label: 'Afirmações', icon: Star },
+                { id: 'animation', label: 'Pulso Cósmico', icon: Clock } // Add Animation tab here
               ].map(({ id, label, icon: Icon }) => (
                 <Button
                   key={id}
                   variant="ghost"
-                  onClick={() => setActivePanel(id)}
                   className={`w-full justify-start text-sm font-medium rounded-md transition-colors ${
                     activePanel === id 
                       ? 'bg-zinc-800 text-white' 
                       : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50'
-                  }`}
+                  } flex items-center justify-between`} // Ensure Button itself is a flex container with justify-between
+                  onClick={() => setActivePanel(id)}
                 >
-                  <Icon className="w-4 h-4 mr-3" />
-                  {label}
+                  <div className="flex items-center"> {/* Container for Icon and Label */}
+                    <Icon className="w-4 h-4 mr-3" />
+                    <span>{label}</span> {/* Label */}
+                  </div>
+
+                  {/* Add Play/Pause icon next to Animation label IF this is the animation tab */}
+                  {id === 'animation' && (
+                    <button 
+                      className="p-1 rounded-full hover:bg-white/10 transition-colors ml-2"
+                      onClick={(e) => { e.stopPropagation(); togglePause(); }} // Prevent tab change on icon click
+                    >
+                      {paused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
+                    </button>
+                  )}
                 </Button>
               ))}
               
@@ -1320,11 +1392,11 @@ export default function WebGLMandalaGenerator() {
             <div className="border-t border-zinc-800 pt-6">
               {activePanel === 'geometry' && (
                 <div className="space-y-6">
-                  <h3 className="text-lg font-semibold text-white mb-4">Geometry</h3>
-                  
+                  <h3 className="text-lg font-semibold text-white mb-4">Geometrias</h3>
+
                   <div className="space-y-4">
                     <div className="p-4 bg-zinc-800 rounded-lg">
-                      <label className="text-sm font-medium text-zinc-300 block mb-2">Symmetry</label>
+                      <label className="text-sm font-medium text-zinc-300 block mb-2">Simetria</label>
                       <div className="text-xs text-zinc-400 mb-2">{sym} segments</div>
                       <Slider 
                         min={3} max={32} step={1} 
@@ -1333,9 +1405,9 @@ export default function WebGLMandalaGenerator() {
                         className="w-full"
                       />
                     </div>
-                    
+
                     <div className="p-4 bg-zinc-800 rounded-lg">
-                      <label className="text-sm font-medium text-zinc-300 block mb-2">Scale</label>
+                      <label className="text-sm font-medium text-zinc-300 block mb-2">Escala</label>
                       <div className="text-xs text-zinc-400 mb-2">{scale.toFixed(2)}×</div>
                       <Slider 
                         min={0.5} max={3} step={0.05} 
@@ -1347,7 +1419,7 @@ export default function WebGLMandalaGenerator() {
 
                     <div className="grid grid-cols-2 gap-3">
                       <div className="p-4 bg-zinc-800 rounded-lg">
-                        <label className="text-sm font-medium text-zinc-300 block mb-2">Center X</label>
+                        <label className="text-sm font-medium text-zinc-300 block mb-2">Centro ←→</label>
                         <div className="text-xs text-zinc-400 mb-2">{centerX.toFixed(2)}</div>
                         <Slider 
                           min={-0.5} max={0.5} step={0.01} 
@@ -1357,7 +1429,7 @@ export default function WebGLMandalaGenerator() {
                         />
                       </div>
                       <div className="p-4 bg-zinc-800 rounded-lg">
-                        <label className="text-sm font-medium text-zinc-300 block mb-2">Center Y</label>
+                        <label className="text-sm font-medium text-zinc-300 block mb-2">Centro ↑↓</label>
                         <div className="text-xs text-zinc-400 mb-2">{centerY.toFixed(2)}</div>
                         <Slider 
                           min={-0.5} max={0.5} step={0.01} 
@@ -1373,19 +1445,19 @@ export default function WebGLMandalaGenerator() {
                         size="sm" 
                         variant="outline"
                         onClick={() => setCenterX(0)}
-                        className="flex-1 bg-zinc-700 hover:bg-zinc-600 border-zinc-600 text-zinc-300"
+                        className="flex-1 bg-zinc-700 hover:bg-zinc-600 border-zinc-600 text-zinc-300 text-xs"
                       >
                         <RotateCcw className="w-3 h-3 mr-2" />
-                        Reset X
+                        Centralizar ←→
                       </Button>
                       <Button 
                         size="sm" 
                         variant="outline"
                         onClick={() => setCenterY(0)}
-                        className="flex-1 bg-zinc-700 hover:bg-zinc-600 border-zinc-600 text-zinc-300"
+                        className="flex-1 bg-zinc-700 hover:bg-zinc-600 border-zinc-600 text-zinc-300 text-xs"
                       >
                         <RotateCcw className="w-3 h-3 mr-2" />
-                        Reset Y
+                        Centralizar ↑↓
                       </Button>
                     </div>
                   </div>
@@ -1437,6 +1509,18 @@ export default function WebGLMandalaGenerator() {
                         className="w-full"
                       />
                     </div>
+
+ {/* Glow Slider - Moved from Effects */}
+ <div className="p-4 bg-zinc-800 rounded-lg">
+                      <label className="text-sm font-medium text-zinc-300 block mb-2">Glow</label>
+ <div className="text-xs text-zinc-400 mb-2">{glow.toFixed(2)}×</div>
+ <Slider
+ min={0.2} max={3} step={0.05}
+ value={[glow]}
+ onValueChange={([v]) => setGlow(v)}
+ className="w-full"
+ />
+ </div>
 
                     <div className="p-4 bg-zinc-800 rounded-lg">
                       <label className="text-sm font-medium text-zinc-300 block mb-3">Color Presets</label>
@@ -1542,6 +1626,53 @@ export default function WebGLMandalaGenerator() {
                           </div>
                         </div>
 
+                        {/* HSL Sliders for Image */}
+                        <div className="p-4 bg-zinc-800 rounded-lg">
+                          <h4 className="text-sm font-medium text-zinc-300 block mb-3">HSL Adjustments</h4>
+                          <div className="space-y-4">
+                            <div>
+                              <label className="text-sm font-medium text-zinc-300 block mb-2">Hue</label>
+                              <div className="text-xs text-zinc-500 mb-2">{imgHueDeg}°</div>
+                              <Slider
+                                min={0} max={360} step={1}
+                                value={[imgHueDeg]}
+                                onValueChange={([v]) => setImgHueDeg(v)}
+                                className="w-full"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="text-sm font-medium text-zinc-300 block mb-2">Saturation</label>
+                              <div className="text-xs text-zinc-500 mb-2">{Math.round(imgSat * 100)}%</div>
+                              <Slider
+                                min={0} max={2} step={0.01} // Allowing saturation above 1 for more vibrant effects
+                                value={[imgSat]}
+                                onValueChange={([v]) => setImgSat(v)}
+                                className="w-full"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="text-sm font-medium text-zinc-300 block mb-2">Lightness</label>
+                              <div className="text-xs text-zinc-500 mb-2">{(imgLight * 100).toFixed(0)}%</div>
+                              {/* Range from -1 to 1 allows darkening and brightening */}
+                              <Slider
+                                min={-1} max={1} step={0.01}
+                                value={[imgLight]}
+                                onValueChange={([v]) => setImgLight(v)}
+                                className="w-full"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Reset Button - Moved to include HSL */}
+                        {/* This button was already here, no diff needed for its position */}
+
+
+
+
+
                         <div className="flex items-center justify-between p-3 bg-zinc-700 rounded-lg">
                           <label className="text-sm font-medium text-zinc-300">Mirror Edges</label>
                           <Button
@@ -1581,35 +1712,16 @@ export default function WebGLMandalaGenerator() {
 
               {activePanel === 'effects' && (
                 <div className="space-y-6">
-                  <h3 className="text-lg font-semibold text-white mb-4">Effects</h3>
+                  <h3 className="text-lg font-semibold text-white mb-4">Efeitos</h3>
                   
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-3">
-                      <div className="p-4 bg-zinc-800 rounded-lg">
-                        <label className="text-sm font-medium text-zinc-300 block mb-2">Speed</label>
-                        <div className="text-xs text-zinc-400 mb-2">{speed.toFixed(2)}×</div>
-                        <Slider 
-                          min={0.1} max={2} step={0.05} 
-                          value={[speed]} 
-                          onValueChange={([v]) => setSpeed(v)}
-                          className="w-full"
-                        />
-                      </div>
-                      <div className="p-4 bg-zinc-800 rounded-lg">
-                        <label className="text-sm font-medium text-zinc-300 block mb-2">Glow</label>
-                        <div className="text-xs text-zinc-400 mb-2">{glow.toFixed(2)}×</div>
-                        <Slider 
-                          min={0.2} max={3} step={0.05} 
-                          value={[glow]} 
-                          onValueChange={([v]) => setGlow(v)}
-                          className="w-full"
-                        />
-                      </div>
+   
                     </div>
 
                     <div className="space-y-3 p-4 bg-zinc-800 rounded-lg">
                       <div className="flex items-center justify-between">
-                        <label className="text-sm font-medium text-zinc-300">Stars</label>
+                        <label className="text-sm font-medium text-zinc-300">Estrelas</label>
                         <Button
                           size="sm"
                           variant={starsOn ? "default" : "outline"}
@@ -1622,7 +1734,7 @@ export default function WebGLMandalaGenerator() {
                       {starsOn && (
                         <div className="grid grid-cols-2 gap-3">
                           <div>
-                            <label className="text-xs text-zinc-400 block mb-1">Density</label>
+                            <label className="text-xs text-zinc-400 block mb-1">Densidade</label>
                             <div className="text-xs text-zinc-500 mb-1">{(starDensity * 100).toFixed(1)}%</div>
                             <Slider 
                               min={0.01} max={0.2} step={0.01} 
@@ -1632,7 +1744,7 @@ export default function WebGLMandalaGenerator() {
                             />
                           </div>
                           <div>
-                            <label className="text-xs text-zinc-400 block mb-1">Intensity</label>
+                            <label className="text-xs text-zinc-400 block mb-1">Intensidade</label>
                             <div className="text-xs text-zinc-500 mb-1">{(starIntensity * 100).toFixed(0)}%</div>
                             <Slider 
                               min={0.1} max={1} step={0.1} 
@@ -1646,7 +1758,7 @@ export default function WebGLMandalaGenerator() {
                     </div>
 
                     <div className="space-y-3 p-4 bg-zinc-800 rounded-lg">
-                      <label className="text-sm font-medium text-zinc-300 block mb-3">Wave Effects</label>
+                      <label className="text-sm font-medium text-zinc-300 block mb-3">Onda</label>
                       <div className="flex gap-2">
                         {[
                           { value: 0, label: 'None' },
@@ -1835,6 +1947,30 @@ export default function WebGLMandalaGenerator() {
                 </div>
               )}
 
+              {/* Animation Panel - New Block */}
+              {activePanel === 'animation' && (
+                <div className="space-y-6"> {/* Main container for Animation panel */}
+                  <div className="flex items-center justify-between"> {/* Title and Play/Pause button div */}
+                    <h3 className="text-lg font-semibold text-white mb-4">Animation</h3>
+                    {/* The Play/Pause button is rendered in the tab button itself, 
+                        but you could add panel-specific controls here if needed */}
+                    {/* Example: Could repeat the togglePause button here if desired */}
+                  </div>
+                  
+                  {/* Add Speed slider here */}
+                  
+                   <div className="p-4 bg-zinc-800 rounded-lg">
+                      <label className="text-sm font-medium text-zinc-300 block mb-2">Speed</label>
+                      <div className="text-xs text-zinc-400 mb-2">{speed.toFixed(2)}×</div>
+                      <Slider
+                        min={0.1} max={2} step={0.05}
+                        value={[speed]}
+                        onValueChange={([v]) => setSpeed(v)}
+                        className="w-full"
+                      />
+                    </div>
+                </div>
+              )}
 
             </div>
 
