@@ -1,9 +1,14 @@
 // src/App.jsx
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import axios from "axios";
+import WebGLMandalaGenerator from "./components/WebGLMandalaGenerator";
 import { supabase } from "./supabaseClient";
-import "./App.css"; // mantém seus estilos atuais
 
-// ---------- COMPONENTE LOGIN ----------
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
+
+// ---------- LOGIN ----------
 function LoginBox() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,7 +33,7 @@ function LoginBox() {
 
   const fetchProtected = async () => {
     const token = (await supabase.auth.getSession()).data.session?.access_token;
-    const res = await fetch("https://<seu-backend>.onrender.com/api/protected", {
+    const res = await fetch(`${API}/protected`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const json = await res.json();
@@ -55,20 +60,34 @@ function LoginBox() {
   );
 }
 
-// ---------- APP PRINCIPAL ----------
-export default function App() {
-  // seu código da mandala aqui
-  // (mantido para não quebrar o visual)
+// ---------- HOME ----------
+const Home = () => {
+  const helloWorldApi = async () => {
+    try {
+      const response = await axios.get(`${API}/`);
+      console.log(response.data.message);
+    } catch (e) {
+      console.error(e, `errored out requesting /api`);
+    }
+  };
 
+  useEffect(() => {
+    helloWorldApi();
+  }, []);
+
+  return <WebGLMandalaGenerator />;
+};
+
+// ---------- APP ----------
+export default function App() {
   return (
-    <>
+    <div className="App">
       <LoginBox />
-      {/* aqui você coloca o restante da sua interface */}
-      <div className="mandala-container">
-        <h1>Prévia em tempo real</h1>
-        <p>Sua mandala sendo gerada...</p>
-        {/* componentes da mandala */}
-      </div>
-    </>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+        </Routes>
+      </BrowserRouter>
+    </div>
   );
 }
