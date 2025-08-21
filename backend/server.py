@@ -45,6 +45,7 @@ async def create_status_check(input: StatusCheckCreate):
     return status_obj
 
 # ---------- ROTA PARA VERIFICAR STATUS ----------
+# ---------- ROTA DE STATUS ----------
 @api_router.get("/user-status/{email}")
 def user_status(email: str):
     res = supabase.table("user_access").select("status").eq("email", email).single().execute()
@@ -60,9 +61,10 @@ async def protected_route(user=Depends(get_current_user)):
 app.include_router(api_router)
 
 # ---------- MIDDLEWARE ----------
+# ---------- CORS ----------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://yantralab.netlify.app"],
+    allow_origins=["https://yantralab.netlify.app"],  # 👈 sem espaços
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
