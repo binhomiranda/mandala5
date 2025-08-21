@@ -1,7 +1,3 @@
-supabase: Client = create_client(
-    os.getenv("SUPABASE_URL"),
-    os.getenv("SUPABASE_SERVICE_ROLE_KEY")
-)
 from fastapi import FastAPI, APIRouter, Depends
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -14,21 +10,28 @@ import uuid
 from datetime import datetime
 from auth import get_current_user
 from supabase import create_client, Client
-import os
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-# Criar app e router
+# ---------- INICIALIZAR SUPABASE ----------
+supabase: Client = create_client(
+    os.getenv("SUPABASE_URL"),
+    os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+)
+
+# ---------- FASTAPI ----------
 app = FastAPI()
 api_router = APIRouter(prefix="/api")
 
-# Create the main app
-app = FastAPI()
-
-# CRIAR o router ANTES de usá-lo
-api_router = APIRouter(prefix="/api")
-
+# ---------- CORS ----------
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://yantralab.netlify.app"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 # ---------- MODELOS ----------
 class StatusCheck(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
@@ -65,16 +68,6 @@ async def protected_route(user=Depends(get_current_user)):
 
 # ---------- INCLUIR ROTAS ----------
 app.include_router(api_router)
-
-# ---------- MIDDLEWARE ----------
-# ---------- CORS ----------
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["https://yantralab.netlify.app"],  # 👈 sem espaços
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 # ---------- LOGGING ----------
 logging.basicConfig(
