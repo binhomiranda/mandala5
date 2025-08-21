@@ -9,6 +9,11 @@ from pydantic import BaseModel, Field
 from typing import List
 import uuid
 from datetime import datetime
+from auth import get_current_user
+
+@api_router.get("/protected")
+async def protected_route(user=Depends(get_current_user)):
+    return {"message": f"Olá, {user['email']}", "plan": user["subscription_plan"]}
 
 
 ROOT_DIR = Path(__file__).parent
