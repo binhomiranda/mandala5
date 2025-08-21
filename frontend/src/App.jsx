@@ -1,7 +1,9 @@
+// src/App.jsx
 import { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
+import "./App.css"; // mantém seus estilos atuais
 
-// --- LOGIN COM SUPABASE ---
+// ---------- COMPONENTE LOGIN ----------
 function LoginBox() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -9,7 +11,6 @@ function LoginBox() {
   const [data, setData] = useState(null);
 
   useEffect(() => {
-    // recupera sessão salva
     supabase.auth.getSession().then(({ data }) => setUser(data.session?.user));
   }, []);
 
@@ -36,20 +37,38 @@ function LoginBox() {
 
   if (user) {
     return (
-      <div style={{ position: "fixed", top: 10, right: 10, zIndex: 9999 }}>
-        <small>Olá, {user.email}</small> <button onClick={logout}>sair</button>
-        <button onClick={fetchProtected} style={{ marginLeft: 8 }}>dados privados</button>
+      <div style={{ position: "fixed", top: 10, right: 10, zIndex: 9999, background: "#fff", padding: 8, borderRadius: 4 }}>
+        <small>Olá, {user.email}</small>
+        <button onClick={logout}>sair</button>
+        <button onClick={fetchProtected} style={{ marginLeft: 8 }}>dados</button>
         {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
       </div>
     );
   }
 
   return (
-    <div style={{ position: "fixed", top: 10, right: 10, zIndex: 9999 }}>
+    <div style={{ position: "fixed", top: 10, right: 10, zIndex: 9999, background: "#fff", padding: 8, borderRadius: 4 }}>
       <input placeholder="email" value={email} onChange={(e) => setEmail(e.target.value)} />
       <input type="password" placeholder="senha" value={password} onChange={(e) => setPassword(e.target.value)} />
       <button onClick={login}>entrar</button>
-      <LoginBox />
     </div>
+  );
+}
+
+// ---------- APP PRINCIPAL ----------
+export default function App() {
+  // seu código da mandala aqui
+  // (mantido para não quebrar o visual)
+
+  return (
+    <>
+      <LoginBox />
+      {/* aqui você coloca o restante da sua interface */}
+      <div className="mandala-container">
+        <h1>Prévia em tempo real</h1>
+        <p>Sua mandala sendo gerada...</p>
+        {/* componentes da mandala */}
+      </div>
+    </>
   );
 }
