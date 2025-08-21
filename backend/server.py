@@ -44,10 +44,13 @@ async def create_status_check(input: StatusCheckCreate):
     _ = await db.status_checks.insert_one(status_obj.dict())
     return status_obj
 
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    status_checks = await db.status_checks.find().to_list(1000)
-    return [StatusCheck(**status_check) for status_check in status_checks]
+# ---------- ROTA PARA VERIFICAR STATUS ----------
+@api_router.get("/user-status/{email}")
+def user_status(email: str):
+    res = supabase.table("user_access").select("status").eq("email", email).single().execute()
+    if not res.data:
+        return {"status": "none"}
+    return {"status": res.data.get("status")}
 
 @api_router.get("/protected")
 async def protected_route(user=Depends(get_current_user)):
