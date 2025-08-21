@@ -5,90 +5,107 @@ import axios from "axios";
 import WebGLMandalaGenerator from "./components/WebGLMandalaGenerator";
 import { supabase } from "./supabaseClient";
 
-//const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || process.env.REACT_APP_BACKEND_URL;
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-// ---------- LOGIN ----------
-function LoginBox() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+// ---------- GUARD ----------
+function AuthorizationGuard({ children }) {
   const [user, setUser] = useState(null);
-  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [hasAccess, setHasAccess] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setUser(data.session?.user));
+    const check = async () => {
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session) {
+        setUser(null);
+        setHasAccess(false);
+        setLoading(false);
+        return;
+      }
+
+      // Verifica se o usuário está "active" na tabela user_access
+      const email = session.session.user.email;
+      const res = await fetch(`${API}/user-status/${email}`);
+      const json = await res.json();
+      setUser(session.session.user);
+      setHasAccess(json.status === "active");
+      setLoading(false);
+    };
+    check();
   }, []);
+
+  if (loading) return <p style={{ padding: 32 }}>Verificando acesso...</p>;
+  if (!user) return <LoginScreen />;
+  if (!hasAccess)
+    return (
+      <div style={{ padding: 32 }}>
+        <h2>Acesso negado</h2>
+        <p>Entre em contato para liberar seu acesso.</p>
+      </div>
+    );
+
+  return children;
+}
+
+// ---------- LOGIN ----------
+function LoginScreen() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const login = async () => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) return alert(error.message);
-    setUser(data.user);
+    if (error) return setError(error.message);
+    window.location.reload(); // força nova verificação
   };
-
-  const logout = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    setData(null);
-  };
-
-  const fetchProtected = async () => {
-    const token = (await supabase.auth.getSession()).data.session?.access_token;
-    const res = await fetch(`${API}/protected`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const json = await res.json();
-    setData(json);
-  };
-
-  if (user) {
-    return (
-      <div style={{ position: "fixed", top: 10, right: 10, zIndex: 9999, background: "#fff", padding: 8, borderRadius: 4 }}>
-        <small>Olá, {user.email}</small>
-        <button onClick={logout}>sair</button>
-        <button onClick={fetchProtected} style={{ marginLeft: 8 }}>dados</button>
-        {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
-      </div>
-    );
-  }
 
   return (
-    <div style={{ position: "fixed", top: 10, right: 10, zIndex: 9999, background: "#fff", padding: 8, borderRadius: 4 }}>
-      <input placeholder="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-      <input type="password" placeholder="senha" value={password} onChange={(e) => setPassword(e.target.value)} />
-      <button onClick={login}>entrar</button>
+    <div style={{ padding: 32, maxWidth: 320, margin: "auto", marginTop: "20vh" }}>
+      <h2>Login obrigatório</h2>
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      <input
+        placeholder="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        style={{ width: "100%", marginBottom: 8 }}
+      />
+      <input
+        type="password"
+        placeholder="senha"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        style={{ width: "100%", marginBottom: 8 }}
+      />
+      <button onClick={login} style={{ width: "100%" }}>
+        Entrar
+      </button>
     </div>
   );
 }
 
 // ---------- HOME ----------
 const Home = () => {
-  const helloWorldApi = async () => {
-    try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
-    } catch (e) {
-      console.error(e, `errored out requesting /api`);
-    }
-  };
-
   useEffect(() => {
-    helloWorldApi();
+    axios.get(`${API}/`).then((r) => console.log(r.data.message));
   }, []);
-
   return <WebGLMandalaGenerator />;
 };
 
 // ---------- APP ----------
 export default function App() {
   return (
-    <div className="App">
-      <LoginBox />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-        </Routes>
-      </BrowserRouter>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <AuthorizationGuard>
+              <Home />
+            </AuthorizationGuard>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }
