@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, Depends
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -11,11 +11,6 @@ import uuid
 from datetime import datetime
 from auth import get_current_user
 
-@api_router.get("/protected")
-async def protected_route(user=Depends(get_current_user)):
-    return {"message": f"Olá, {user['email']}", "plan": user["subscription_plan"]}
-
-
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
@@ -24,14 +19,13 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
-# Create the main app without a prefix
+# Create the main app
 app = FastAPI()
 
-# Create a router with the /api prefix
+# CRIAR o router ANTES de usá-lo
 api_router = APIRouter(prefix="/api")
 
-
-# Define Models
+# ---------- MODELOS ----------
 class StatusCheck(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     client_name: str
@@ -40,7 +34,7 @@ class StatusCheck(BaseModel):
 class StatusCheckCreate(BaseModel):
     client_name: str
 
-# Add your routes to the router instead of directly to app
+# ---------- ROTAS ----------
 @api_router.get("/")
 async def root():
     return {"message": "Hello World"}
@@ -57,9 +51,14 @@ async def get_status_checks():
     status_checks = await db.status_checks.find().to_list(1000)
     return [StatusCheck(**status_check) for status_check in status_checks]
 
-# Include the router in the main app
+@api_router.get("/protected")
+async def protected_route(user=Depends(get_current_user)):
+    return {"message": f"Olá, {user['email']}", "plan": user["subscription_plan"]}
+
+# ---------- INCLUIR ROTAS ----------
 app.include_router(api_router)
 
+# ---------- MIDDLEWARE ----------
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
@@ -68,7 +67,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Configure logging
+# ---------- LOGGING ----------
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
