@@ -1,3 +1,8 @@
+supabase: Client = create_client(
+    os.getenv("SUPABASE_URL"),
+    os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+)
+
 from fastapi import FastAPI, APIRouter, Depends
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -9,6 +14,8 @@ from typing import List
 import uuid
 from datetime import datetime
 from auth import get_current_user
+from supabase import create_client, Client
+import os
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
