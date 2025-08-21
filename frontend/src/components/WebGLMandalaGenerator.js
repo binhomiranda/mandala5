@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { Button } from "./ui/button";
 import { Slider } from "./ui/slider";
 import { Input } from "./ui/input";
-import { Sparkles, Download, RefreshCw, Pause, Play, RotateCcw, Upload, Eye, EyeOff, Palette, Settings, Zap, Star, Trash2, Plus, Check, X, Code, Clock } from "lucide-react";
+import { Sparkles, Download, RefreshCw, Pause, Play, RotateCcw, Upload, Eye, EyeOff, Palette, Settings, Zap, Star, Trash2, Plus, Check, X, Code, Clock, Flower } from "lucide-react";
 
 // Fragment shader with kaleidoscope + HSL for image, stars, effects
 const frag = `
@@ -1207,8 +1207,8 @@ if (aspect === '4:5' || aspect === '9:16') {
                 <Sparkles className="w-5 h-5 text-black" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-white">Mandala Lab</h1>
-                <p className="text-sm text-zinc-400">Create stunning visual art</p>
+                <h1 className="text-2xl font-bold text-white">Yantra Lab</h1>
+                <p className="text-sm text-zinc-400">símbolos poderosos de auto-organização e a busca pela totalidade.</p>
               </div>
             </div>
             
@@ -1222,7 +1222,7 @@ if (aspect === '4:5' || aspect === '9:16') {
                 className="bg-green-500 hover:bg-green-600 text-black font-medium rounded-full px-6"
               >
                 <RefreshCw className="w-4 h-4 mr-2" />
-                Shuffle
+                Sorte
               </Button>
               <Button 
                 size="sm" 
@@ -1244,8 +1244,8 @@ if (aspect === '4:5' || aspect === '9:16') {
             {/* Preview Header */}
             <div className="flex items-center justify-between p-4 bg-zinc-900 border-b border-zinc-800">
               <div>
-                <h2 className="text-lg font-bold text-white">Live Preview</h2>
-                <p className="text-sm text-zinc-400">Real-time mandala generation</p>
+                <h2 className="text-lg font-bold text-white">Prévia em tempo real</h2>
+                <p className="text-sm text-zinc-400">Sua mandala sendo gerada em tempo real</p>
               </div>
               
               <div className="flex items-center gap-3">
@@ -1337,9 +1337,9 @@ if (aspect === '4:5' || aspect === '9:16') {
             {/* Tab Navigation */}
             <div className="space-y-2 mb-6">
               {[
-                { id: 'geometry', label: 'Geometrias Sagradas', icon: Settings },
+                { id: 'geometry', label: 'Geometrias Sagradas', icon: Flower },
                 { id: 'colors', label: 'Cromoterapia', icon: Palette },
-                { id: 'kaleidoscope', label: 'Mandalas', icon: Upload },
+                { id: 'kaleidoscope', label: 'Mandalas', icon: Sparkles },
                 { id: 'effects', label: 'Vibrações Visuais', icon: Zap },
                 { id: 'text', label: 'Afirmações', icon: Star },
                 { id: 'animation', label: 'Pulso Cósmico', icon: Clock } // Add Animation tab here
@@ -1397,7 +1397,7 @@ if (aspect === '4:5' || aspect === '9:16') {
                   <div className="space-y-4">
                     <div className="p-4 bg-zinc-800 rounded-lg">
                       <label className="text-sm font-medium text-zinc-300 block mb-2">Simetria</label>
-                      <div className="text-xs text-zinc-400 mb-2">{sym} segments</div>
+                      <div className="text-xs text-zinc-400 mb-2">{sym} segmentos</div>
                       <Slider 
                         min={3} max={32} step={1} 
                         value={[sym]} 
@@ -1471,7 +1471,7 @@ if (aspect === '4:5' || aspect === '9:16') {
                   <div className="space-y-4">
                     <div className="grid grid-cols-3 gap-3">
                       <div className="p-3 bg-zinc-800 rounded-lg">
-                        <label className="text-sm font-medium text-zinc-300 block mb-2">Color 1</label>
+                        <label className="text-sm font-medium text-zinc-300 block mb-2">Cor 1</label>
                         <Input 
                           type="color" 
                           value={col1} 
@@ -1480,7 +1480,7 @@ if (aspect === '4:5' || aspect === '9:16') {
                         />
                       </div>
                       <div className="p-3 bg-zinc-800 rounded-lg">
-                        <label className="text-sm font-medium text-zinc-300 block mb-2">Color 2</label>
+                        <label className="text-sm font-medium text-zinc-300 block mb-2">Cor 2</label>
                         <Input 
                           type="color" 
                           value={col2} 
@@ -1489,7 +1489,7 @@ if (aspect === '4:5' || aspect === '9:16') {
                         />
                       </div>
                       <div className="p-3 bg-zinc-800 rounded-lg">
-                        <label className="text-sm font-medium text-zinc-300 block mb-2">Color 3</label>
+                        <label className="text-sm font-medium text-zinc-300 block mb-2">Cor 3</label>
                         <Input 
                           type="color" 
                           value={col3} 
@@ -1500,7 +1500,7 @@ if (aspect === '4:5' || aspect === '9:16') {
                     </div>
 
                     <div className="p-4 bg-zinc-800 rounded-lg">
-                      <label className="text-sm font-medium text-zinc-300 block mb-2">Gradient Mix</label>
+                      <label className="text-sm font-medium text-zinc-300 block mb-2">Mistura do gradiente</label>
                       <div className="text-xs text-zinc-400 mb-2">{Math.round(gradMix * 100)}%</div>
                       <Slider 
                         min={0} max={1} step={0.01} 
@@ -1512,7 +1512,7 @@ if (aspect === '4:5' || aspect === '9:16') {
 
  {/* Glow Slider - Moved from Effects */}
  <div className="p-4 bg-zinc-800 rounded-lg">
-                      <label className="text-sm font-medium text-zinc-300 block mb-2">Glow</label>
+                      <label className="text-sm font-medium text-zinc-300 block mb-2">Brilho</label>
  <div className="text-xs text-zinc-400 mb-2">{glow.toFixed(2)}×</div>
  <Slider
  min={0.2} max={3} step={0.05}
@@ -1523,7 +1523,7 @@ if (aspect === '4:5' || aspect === '9:16') {
  </div>
 
                     <div className="p-4 bg-zinc-800 rounded-lg">
-                      <label className="text-sm font-medium text-zinc-300 block mb-3">Color Presets</label>
+                      <label className="text-sm font-medium text-zinc-300 block mb-3">Palhetas</label>
                       <div className="grid grid-cols-2 gap-2">
                         {MODERN_PALETTES.map((palette, i) => (
                           <Button
@@ -1545,11 +1545,11 @@ if (aspect === '4:5' || aspect === '9:16') {
 
               {activePanel === 'kaleidoscope' && (
                 <div className="space-y-6">
-                  <h3 className="text-lg font-semibold text-white mb-4">Kaleidoscope</h3>
+                  <h3 className="text-lg font-semibold text-white mb-4">Mandalas</h3>
                   
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <label className="text-sm font-medium text-zinc-300">Image Upload</label>
+                      <label className="text-sm font-medium text-zinc-300">Enviar Imagem</label>
                       <Button
                         size="sm"
                         variant={useTex ? "default" : "outline"}
@@ -1758,12 +1758,12 @@ if (aspect === '4:5' || aspect === '9:16') {
                     </div>
 
                     <div className="space-y-3 p-4 bg-zinc-800 rounded-lg">
-                      <label className="text-sm font-medium text-zinc-300 block mb-3">Onda</label>
+                      <label className="text-sm font-medium text-zinc-300 block mb-3">Distorções</label>
                       <div className="flex gap-2">
                         {[
-                          { value: 0, label: 'None' },
-                          { value: 1, label: 'Ripple' },
-                          { value: 2, label: 'Wave' }
+                          { value: 0, label: 'Nenhum' },
+                          { value: 1, label: 'Ondulações' },
+                          { value: 2, label: 'Ocilações' }
                         ].map((effect) => (
                           <Button
                             key={effect.value}
@@ -1811,11 +1811,11 @@ if (aspect === '4:5' || aspect === '9:16') {
 
               {activePanel === 'text' && (
                 <div className="space-y-6">
-                  <h3 className="text-lg font-semibold text-white mb-4">Text Overlay</h3>
+                  <h3 className="text-lg font-semibold text-white mb-4">Sobreposição de texto</h3>
                   
                   <div className="space-y-4">
                     <div className="flex items-center justify-between p-4 bg-zinc-800 rounded-lg">
-                      <label className="text-sm font-medium text-zinc-300">Enable Text</label>
+                      <label className="text-sm font-medium text-zinc-300">Ligar Texto</label>
                       <Button
                         size="sm"
                         variant={textEnabled ? "default" : "outline"}
@@ -1829,19 +1829,19 @@ if (aspect === '4:5' || aspect === '9:16') {
                     {textEnabled && (
                       <div className="space-y-4">
                         <div className="p-4 bg-zinc-800 rounded-lg">
-                          <label className="text-sm font-medium text-zinc-300 block mb-2">Content</label>
+                          <label className="text-sm font-medium text-zinc-300 block mb-2">Conteúdo</label>
                           <textarea
                             value={textValue}
                             onChange={(e) => setTextValue(e.target.value)}
                             className="w-full p-3 bg-zinc-700 border border-zinc-600 rounded-lg text-zinc-100 resize-none"
                             rows={3}
-                            placeholder="Enter your text..."
+                            placeholder="Escreva aqui..."
                           />
                         </div>
 
                         <div className="grid grid-cols-2 gap-3">
                           <div className="p-4 bg-zinc-800 rounded-lg">
-                            <label className="text-sm font-medium text-zinc-300 block mb-2">Size</label>
+                            <label className="text-sm font-medium text-zinc-300 block mb-2">Tamanho</label>
                             <div className="text-xs text-zinc-400 mb-2">{textSize}px</div>
                             <Slider 
                               min={12} max={128} step={1} 
@@ -1851,7 +1851,7 @@ if (aspect === '4:5' || aspect === '9:16') {
                             />
                           </div>
                           <div className="p-4 bg-zinc-800 rounded-lg">
-                            <label className="text-sm font-medium text-zinc-300 block mb-2">Color</label>
+                            <label className="text-sm font-medium text-zinc-300 block mb-2">Cor</label>
                             <Input 
                               type="color" 
                               value={textColor} 
@@ -1868,7 +1868,7 @@ if (aspect === '4:5' || aspect === '9:16') {
                             onClick={() => setTextBold(!textBold)}
                             className={`flex-1 ${textBold ? 'bg-green-500 text-black hover:bg-green-600' : 'bg-zinc-700 hover:bg-zinc-600 border-zinc-600 text-zinc-300'}`}
                           >
-                            {textBold ? 'Bold ON' : 'Bold OFF'}
+                            {textBold ? 'Negrito ✅' : 'Negrito ❌'}
                           </Button>
                           <Button
                             size="sm"
@@ -1876,13 +1876,13 @@ if (aspect === '4:5' || aspect === '9:16') {
                             onClick={() => setTextItalic(!textItalic)}
                             className={`flex-1 ${textItalic ? 'bg-green-500 text-black hover:bg-green-600' : 'bg-zinc-700 hover:bg-zinc-600 border-zinc-600 text-zinc-300'}`}
                           >
-                            {textItalic ? 'Italic ON' : 'Italic OFF'}
+                            {textItalic ? 'Itálico ✅' : 'Itálico ❌'}
                           </Button>
                         </div>
 
                         <div className="grid grid-cols-2 gap-3">
                           <div className="p-4 bg-zinc-800 rounded-lg">
-                            <label className="text-sm font-medium text-zinc-300 block mb-2">Position X</label>
+                            <label className="text-sm font-medium text-zinc-300 block mb-2">Posição em X</label>
                             <div className="text-xs text-zinc-400 mb-2">{textX}%</div>
                             <Slider 
                               min={0} max={100} step={1} 
@@ -1892,7 +1892,7 @@ if (aspect === '4:5' || aspect === '9:16') {
                             />
                           </div>
                           <div className="p-4 bg-zinc-800 rounded-lg">
-                            <label className="text-sm font-medium text-zinc-300 block mb-2">Position Y</label>
+                            <label className="text-sm font-medium text-zinc-300 block mb-2">Posição em Y</label>
                             <div className="text-xs text-zinc-400 mb-2">{textY}%</div>
                             <Slider 
                               min={0} max={100} step={1} 
@@ -1904,7 +1904,7 @@ if (aspect === '4:5' || aspect === '9:16') {
                         </div>
 
                         <div className="p-4 bg-zinc-800 rounded-lg">
-                          <label className="text-sm font-medium text-zinc-300 block mb-2">Line Height</label>
+                          <label className="text-sm font-medium text-zinc-300 block mb-2">Altura da linha</label>
                           <div className="text-xs text-zinc-400 mb-2">{textLineHeight.toFixed(1)}×</div>
                           <Slider 
                             min={0.8} max={2.5} step={0.1} 
@@ -1916,10 +1916,10 @@ if (aspect === '4:5' || aspect === '9:16') {
                         </div>
 
                         <div className="p-4 bg-zinc-800 rounded-lg">
-                          <label className="text-sm font-medium text-zinc-300 block mb-2">Background Dimmer</label>
-                          <div className="text-xs text-zinc-400 mb-2">Darken background behind text: {Math.round(bgDim * 100)}%</div>
+                          <label className="text-sm font-medium text-zinc-300 block mb-2">Escurecer Fundo</label>
+                          <div className="text-xs text-zinc-400 mb-2">Escurer o fundo do textto: {Math.round(bgDim * 100)}%</div>
                           <Slider 
-                            min={0} max={0.8} step={0.01} 
+                            min={0} max={0.9} step={0.01} 
                             value={[bgDim]} 
                             onValueChange={([v]) => setBgDim(v)}
                             className="w-full"
@@ -1938,7 +1938,7 @@ if (aspect === '4:5' || aspect === '9:16') {
                             className="flex-1 bg-zinc-700 hover:bg-zinc-600 border-zinc-600 text-zinc-300"
                           >
                             <RotateCcw className="w-3 h-3 mr-2" />
-                            Reset Position
+                            Limpar Configurações
                           </Button>
                         </div>
                       </div>
@@ -1951,7 +1951,7 @@ if (aspect === '4:5' || aspect === '9:16') {
               {activePanel === 'animation' && (
                 <div className="space-y-6"> {/* Main container for Animation panel */}
                   <div className="flex items-center justify-between"> {/* Title and Play/Pause button div */}
-                    <h3 className="text-lg font-semibold text-white mb-4">Animation</h3>
+                    <h3 className="text-lg font-semibold text-white mb-4">Animação</h3>
                     {/* The Play/Pause button is rendered in the tab button itself, 
                         but you could add panel-specific controls here if needed */}
                     {/* Example: Could repeat the togglePause button here if desired */}
@@ -1960,7 +1960,7 @@ if (aspect === '4:5' || aspect === '9:16') {
                   {/* Add Speed slider here */}
                   
                    <div className="p-4 bg-zinc-800 rounded-lg">
-                      <label className="text-sm font-medium text-zinc-300 block mb-2">Speed</label>
+                      <label className="text-sm font-medium text-zinc-300 block mb-2">Velocidade</label>
                       <div className="text-xs text-zinc-400 mb-2">{speed.toFixed(2)}×</div>
                       <Slider
                         min={0.1} max={2} step={0.05}
@@ -2050,8 +2050,8 @@ if (aspect === '4:5' || aspect === '9:16') {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="text-sm font-semibold text-white">Saved Presets</h4>
-                    <p className="text-xs text-zinc-400">Save and manage your mandala configurations</p>
+                    <h4 className="text-sm font-semibold text-white">Configurações Salvas</h4>
+                    <p className="text-xs text-zinc-400">Salve e gerencie as configurações das suas mandalas</p>
                   </div>
                   <Button
                     size="sm"
@@ -2127,7 +2127,7 @@ if (aspect === '4:5' || aspect === '9:16') {
 
                 {savedPresets.length === 0 && !showPresetInput && (
                   <div className="p-4 bg-zinc-800 rounded-lg text-center">
-                    <p className="text-sm text-zinc-400">No presets saved yet. Create your first preset!</p>
+                    <p className="text-sm text-zinc-400">Nenhuma configuração salva ainda. Crie seu primeiro arquivo!</p>
                   </div>
                 )}
               </div>
@@ -2140,7 +2140,7 @@ if (aspect === '4:5' || aspect === '9:16') {
                   <Input
                     type="number"
                     value={size}
-                    onChange={(e) => setSize(parseInt(e.target.value) || 1024)}
+                    onChange={(e) => setSize(parseInt(e.target.value) || 1080)}
                     min={256}
                     max={8192}
                     step={256}
