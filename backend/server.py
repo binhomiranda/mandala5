@@ -1,47 +1,54 @@
 # backend/server.py
-from fastapi import FastAPI, APIRouter, Depends, HTTPException
+from fastapi import FastAPI, APIRouter, Depends, HTTPException, Request
 from starlette.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-from typing import Optional
 from datetime import datetime
-import os
-import uuid
-import logging
+from typing import Optional
+import os, uuid, logging
 
 from auth import get_current_user
 from supabase import create_client, Client
 
-# ---------- ENV & SUPABASE ----------
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")  # service role só no backend
+# ---------- LOGGING ----------
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+log = logging.getLogger("mandala5")
 
-if not SUPABASE_URL or not SUPABASE_KEY:
-    # Mensagem explícita p/ log do Render
-    raise RuntimeError(
-        "Ambiente inválido: defina SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY no Render (Env Group)."
-    )
-
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-
-# ---------- FASTAPI ----------
+# ---------- APP ----------
 app = FastAPI()
 api = APIRouter(prefix="/api")
 
 # ---------- CORS ----------
 ALLOWED_ORIGINS = [
     "https://yantralab.netlify.app",
-    "http://localhost:5173",  # dev opcional
-    "http://127.0.0.1:5173",  # dev opcional
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
 ]
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
-    allow_origin_regex=None,         # ou use um regex se tiver múltiplos subdomínios
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"],             # inclui Authorization
+    allow_headers=["*"],
 )
+
+# ---------- SUPABASE (em app.state) ----------
+def create_supabase_client() -> Client:
+    url = os.getenv("SUPABASE_URL")
+    key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")  # service role só no backend
+    if not url or not key:
+        # Log claro no Render; não vaza a chave inteira
+        log.error("Env faltando: SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY ausentes.")
+        raise RuntimeError("Defina SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY no Render/Env Group")
+    log.info(f"SUPABASE_URL OK; SERVICE_ROLE_KEY prefix: {key[:6]}******")
+    return create_client(url, key)
+
+@app.on_event("startup")
+def on_startup():
+    app.state.supabase = create_supabase_client()
+    log.info("Supabase client inicializado.")
+
+def get_supabase(request: Request) -> Client:
+    return request.app.state.supabase
 
 # ---------- MODELOS ----------
 class StatusCheck(BaseModel):
@@ -54,50 +61,31 @@ class StatusCheckCreate(BaseModel):
 
 # ---------- ROTAS ----------
 @api.get("/")
-async def root():
+def root():
     return {"message": "OK"}
 
 @api.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
-    # Removido uso de "db" (não existe). Se quiser persistir no Supabase:
-    status_obj = StatusCheck(client_name=input.client_name)
+def create_status_check(input: StatusCheckCreate, supabase: Client = Depends(get_supabase)):
+    obj = StatusCheck(client_name=input.client_name)
     try:
-        _ = supabase.table("status_checks").insert(status_obj.dict()).execute()
+        supabase.table("status_checks").insert(obj.dict()).execute()
     except Exception as e:
-        # não derrube o servidor por erro de insert
         raise HTTPException(status_code=500, detail=f"Falha ao salvar status: {e}")
-    return status_obj
+    return obj
 
 @api.get("/user-status/{email}")
-def user_status(email: str):
-    # Espera receber o e-mail URL-encoded vindo do front
+def user_status(email: str, supabase: Client = Depends(get_supabase)):
+    # Chame do front com encodeURIComponent(email)
     try:
-        res = (
-            supabase.table("user_access")
-            .select("status")
-            .eq("email", email)
-            .single()
-            .execute()
-        )
-    except Exception as e:
-        # se .single() não achar, a SDK pode lançar; tratamos aqui
+        res = supabase.table("user_access").select("status").eq("email", email).single().execute()
+        data = res.data or {}
+        return {"status": data.get("status", "none")}
+    except Exception:
+        # Quando não encontra/erro, devolve "none" (evita 500)
         return {"status": "none"}
 
-    data = res.data or {}
-    return {"status": data.get("status", "none")}
-
 @api.get("/protected")
-async def protected_route(user=Depends(get_current_user)):
+def protected_route(user=Depends(get_current_user)):
     return {"message": f"Olá, {user['email']}", "plan": user["subscription_plan"]}
 
-# ---------- INCLUIR ROTAS ----------
 app.include_router(api)
-
-# ---------- LOGGING ----------
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
-logger = logging.getLogger("mandala5")
-
-# (opcional) nada a fechar no shutdown; removido handler que referia "client"
