@@ -1,37 +1,48 @@
-from fastapi import FastAPI, APIRouter, Depends
-from dotenv import load_dotenv
+# backend/server.py
+from fastapi import FastAPI, APIRouter, Depends, HTTPException
 from starlette.middleware.cors import CORSMiddleware
-import os
-import logging
-from pathlib import Path
 from pydantic import BaseModel, Field
-from typing import List
-import uuid
+from typing import Optional
 from datetime import datetime
+import os
+import uuid
+import logging
+
 from auth import get_current_user
 from supabase import create_client, Client
 
-ROOT_DIR = Path(__file__).parent
-load_dotenv(ROOT_DIR / '.env')
+# ---------- ENV & SUPABASE ----------
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")  # service role só no backend
 
-# ---------- INICIALIZAR SUPABASE ----------
-supabase: Client = create_client(
-    os.getenv("SUPABASE_URL"),
-    os.getenv("SUPABASE_SERVICE_ROLE_KEY")
-)
+if not SUPABASE_URL or not SUPABASE_KEY:
+    # Mensagem explícita p/ log do Render
+    raise RuntimeError(
+        "Ambiente inválido: defina SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY no Render (Env Group)."
+    )
+
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # ---------- FASTAPI ----------
 app = FastAPI()
-api_router = APIRouter(prefix="/api")
+api = APIRouter(prefix="/api")
 
 # ---------- CORS ----------
+ALLOWED_ORIGINS = [
+    "https://yantralab.netlify.app",
+    "http://localhost:5173",  # dev opcional
+    "http://127.0.0.1:5173",  # dev opcional
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://yantralab.netlify.app"],
+    allow_origins=ALLOWED_ORIGINS,
+    allow_origin_regex=None,         # ou use um regex se tiver múltiplos subdomínios
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"],
+    allow_headers=["*"],             # inclui Authorization
 )
+
 # ---------- MODELOS ----------
 class StatusCheck(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
@@ -42,40 +53,51 @@ class StatusCheckCreate(BaseModel):
     client_name: str
 
 # ---------- ROTAS ----------
-@api_router.get("/")
+@api.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "OK"}
 
-@api_router.post("/status", response_model=StatusCheck)
+@api.post("/status", response_model=StatusCheck)
 async def create_status_check(input: StatusCheckCreate):
-    status_dict = input.dict()
-    status_obj = StatusCheck(**status_dict)
-    _ = await db.status_checks.insert_one(status_obj.dict())
+    # Removido uso de "db" (não existe). Se quiser persistir no Supabase:
+    status_obj = StatusCheck(client_name=input.client_name)
+    try:
+        _ = supabase.table("status_checks").insert(status_obj.dict()).execute()
+    except Exception as e:
+        # não derrube o servidor por erro de insert
+        raise HTTPException(status_code=500, detail=f"Falha ao salvar status: {e}")
     return status_obj
 
-# ---------- ROTA PARA VERIFICAR STATUS ----------
-# ---------- ROTA DE STATUS ----------
-@api_router.get("/user-status/{email}")
+@api.get("/user-status/{email}")
 def user_status(email: str):
-    res = supabase.table("user_access").select("status").eq("email", email).single().execute()
-    if not res.data:
+    # Espera receber o e-mail URL-encoded vindo do front
+    try:
+        res = (
+            supabase.table("user_access")
+            .select("status")
+            .eq("email", email)
+            .single()
+            .execute()
+        )
+    except Exception as e:
+        # se .single() não achar, a SDK pode lançar; tratamos aqui
         return {"status": "none"}
-    return {"status": res.data.get("status")}
 
-@api_router.get("/protected")
+    data = res.data or {}
+    return {"status": data.get("status", "none")}
+
+@api.get("/protected")
 async def protected_route(user=Depends(get_current_user)):
     return {"message": f"Olá, {user['email']}", "plan": user["subscription_plan"]}
 
 # ---------- INCLUIR ROTAS ----------
-app.include_router(api_router)
+app.include_router(api)
 
 # ---------- LOGGING ----------
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("mandala5")
 
-@app.on_event("shutdown")
-async def shutdown_db_client():
-    client.close()
+# (opcional) nada a fechar no shutdown; removido handler que referia "client"
